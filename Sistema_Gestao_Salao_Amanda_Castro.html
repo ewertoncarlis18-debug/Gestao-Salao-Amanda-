@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6b5847">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Amanda Castro">
+<title>Amanda Castro • Gestão do Salão</title>
+<style>
+:root{--brown:#6b5847;--gold:#b99a63;--cream:#f7f3ee;--line:#e5ddd3;--text:#3f3933;--green:#477a54;--red:#a64b4b}
+*{box-sizing:border-box}body{margin:0;background:#f3eee8;color:var(--text);font-family:Arial,sans-serif}
+header{background:var(--brown);color:#fff;padding:18px 20px;position:sticky;top:0;z-index:5}header h1{margin:0;font-size:20px}header small{opacity:.8}
+nav{display:flex;gap:7px;overflow:auto;padding:10px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:69px;z-index:4}
+nav button{border:0;background:var(--cream);color:var(--brown);padding:10px 13px;border-radius:20px;white-space:nowrap;font-weight:700}
+nav button.active{background:var(--brown);color:#fff}
+main{max-width:1200px;margin:auto;padding:18px}.tab{display:none}.tab.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}.card span{font-size:12px;color:#777}.card strong{display:block;font-size:22px;margin-top:8px;color:var(--brown)}
+section.box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}h2{margin:0 0 14px;color:var(--brown);font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}label{font-size:12px;font-weight:700;color:#665b51}input,select{width:100%;padding:11px;border:1px solid #d9d0c7;border-radius:9px;margin-top:5px;background:#fff}button.primary{background:var(--brown);color:#fff;border:0;border-radius:9px;padding:11px 16px;font-weight:700;margin-top:12px}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left}th{background:var(--cream);color:var(--brown)}.del{border:0;background:#f6dddd;color:var(--red);padding:5px 8px;border-radius:7px}
+.kpi{font-size:13px;line-height:1.8}.profit{color:var(--green)!important}.loss{color:var(--red)!important}
+.note{font-size:12px;color:#777;margin-top:8px}.empty{color:#888;padding:15px 0}
+@media(max-width:600px){main{padding:10px}.cards{grid-template-columns:1fr 1fr}.card{padding:12px}.card strong{font-size:18px}table{font-size:11px}th,td{padding:7px}}
+</style>
+</head>
+<body>
+<header><h1>AMANDA CASTRO</h1><small>Gestão financeira do salão • salvamento automático</small>
+<button id="installBtn" class="primary" style="display:none;background:#b99a63;margin-top:10px" onclick="instalarApp()">📲 Instalar aplicativo</button></header>
+<nav id="nav">
+<button class="active" onclick="tab('inicio',this)">Painel</button>
+<button onclick="tab('atend',this)">Atendimentos</button>
+<button onclick="tab('com',this)">Comissões</button>
+<button onclick="tab('desp',this)">Despesas</button>
+<button onclick="tab('estoque',this)">Estoque</button>
+<button onclick="tab('agenda',this)">Agenda</button>
+</nav>
+<main>
+<div id="inicio" class="tab active">
+<div class="cards">
+<div class="card"><span>Faturamento</span><strong id="fat">R$ 0,00</strong></div>
+<div class="card"><span>Comissões</span><strong id="comv">R$ 0,00</strong></div>
+<div class="card"><span>Despesas</span><strong id="despv">R$ 0,00</strong></div>
+<div class="card"><span>Custos de produtos</span><strong id="cust">R$ 0,00</strong></div>
+<div class="card"><span>Lucro líquido estimado</span><strong id="lucro" class="profit">R$ 0,00</strong></div>
+</div>
+<section class="box"><h2>Resumo</h2><div class="kpi" id="resumo"></div><div class="note">Os dados ficam salvos neste aparelho/navegador. Faça backup exportando os dados na parte inferior.</div></section>
+<section class="box"><h2>Backup</h2><button class="primary" onclick="exportar()">Exportar dados</button> <button class="primary" onclick="importar()">Importar dados</button><input id="arquivo" type="file" accept=".json" style="display:none" onchange="lerArquivo(event)"></section>
+</div>
+
+<div id="atend" class="tab">
+<section class="box"><h2>Novo atendimento</h2><div class="grid">
+<label>Data<input id="aData" type="date"></label><label>Cliente<input id="aCliente" placeholder="Nome"></label>
+<label>Serviço<input id="aServico" placeholder="Ex.: Luzes"></label><label>Profissional<input id="aProf" placeholder="Nome"></label>
+<label>Valor cobrado<input id="aValor" type="number" step=".01"></label><label>Comissão %<input id="aPct" type="number" step=".1" value="0"></label>
+<label>Custo do produto<input id="aCusto" type="number" step=".01" value="0"></label><label>Pagamento<select id="aPag"><option>Pix</option><option>Dinheiro</option><option>Débito</option><option>Crédito</option><option>Transferência</option></select></label>
+</div><button class="primary" onclick="addAtend()">Registrar atendimento</button></section>
+<section class="box"><h2>Histórico</h2><div id="listaAtend"></div></section>
+</div>
+
+<div id="com" class="tab">
+<section class="box"><h2>Comissões por profissional</h2><div id="listaCom"></div></section>
+</div>
+
+<div id="desp" class="tab">
+<section class="box"><h2>Nova despesa</h2><div class="grid">
+<label>Data<input id="dData" type="date"></label><label>Descrição<input id="dDesc" placeholder="Ex.: aluguel"></label>
+<label>Categoria<input id="dCat" placeholder="Aluguel, produtos..."></label><label>Valor<input id="dValor" type="number" step=".01"></label>
+<label>Status<select id="dStatus"><option>Pago</option><option>Pendente</option></select></label>
+</div><button class="primary" onclick="addDesp()">Registrar despesa</button></section>
+<section class="box"><h2>Despesas registradas</h2><div id="listaDesp"></div></section>
+</div>
+
+<div id="estoque" class="tab">
+<section class="box"><h2>Novo produto</h2><div class="grid">
+<label>Produto<input id="pNome"></label><label>Quantidade<input id="pQtd" type="number" step=".01"></label>
+<label>Custo unitário<input id="pCusto" type="number" step=".01"></label><label>Estoque mínimo<input id="pMin" type="number" step=".01" value="1"></label>
+</div><button class="primary" onclick="addProd()">Adicionar produto</button></section>
+<section class="box"><h2>Estoque</h2><div id="listaEst"></div></section>
+</div>
+
+<div id="agenda" class="tab">
+<section class="box"><h2>Novo agendamento</h2><div class="grid">
+<label>Data<input id="gData" type="date"></label><label>Horário<input id="gHora" type="time"></label>
+<label>Cliente<input id="gCliente"></label><label>Serviço<input id="gServico"></label><label>Valor previsto<input id="gValor" type="number" step=".01"></label>
+</div><button class="primary" onclick="addAgenda()">Agendar</button></section>
+<section class="box"><h2>Agenda</h2><div id="listaAgenda"></div></section>
+</div>
+</main>
+<script>
+const KEY="amanda_castro_gestao_v1";
+let db=JSON.parse(localStorage.getItem(KEY)||'{"atend":[],"desp":[],"est":[],"agenda":[]}');
+const money=v=>Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const today=new Date().toISOString().slice(0,10);
+["aData","dData","gData"].forEach(x=>document.getElementById(x).value=today);
+function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+function tab(id,btn){document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");render()}
+function addAtend(){let v=+aValor.value||0,p=+aPct.value||0,c=+aCusto.value||0;if(!aCliente.value||!aServico.value||!v)return alert("Preencha cliente, serviço e valor.");db.atend.push({id:Date.now(),data:aData.value,cliente:aCliente.value,serv:aServico.value,prof:aProf.value,valor:v,pct:p,com:v*p/100,custo:c,pag:aPag.value});["aCliente","aServico","aProf","aValor","aPct","aCusto"].forEach(x=>document.getElementById(x).value="");aPct.value=0;aCusto.value=0;save()}
+function addDesp(){let v=+dValor.value||0;if(!dDesc.value||!v)return alert("Preencha descrição e valor.");db.desp.push({id:Date.now(),data:dData.value,desc:dDesc.value,cat:dCat.value,valor:v,status:dStatus.value});dDesc.value="";dCat.value="";dValor.value="";save()}
+function addProd(){if(!pNome.value)return alert("Informe o produto.");db.est.push({id:Date.now(),nome:pNome.value,qtd:+pQtd.value||0,custo:+pCusto.value||0,min:+pMin.value||0});pNome.value="";pQtd.value="";pCusto.value="";pMin.value=1;save()}
+function addAgenda(){if(!gData.value||!gCliente.value)return alert("Informe data e cliente.");db.agenda.push({id:Date.now(),data:gData.value,hora:gHora.value,cliente:gCliente.value,serv:gServico.value,valor:+gValor.value||0});gCliente.value="";gServico.value="";gValor.value="";save()}
+function del(type,id){db[type]=db[type].filter(x=>x.id!==id);save()}
+function render(){
+let fat=db.atend.reduce((s,x)=>s+x.valor,0), com=db.atend.reduce((s,x)=>s+x.com,0), cust=db.atend.reduce((s,x)=>s+x.custo,0), desp=db.desp.reduce((s,x)=>s+x.valor,0), lucro=fat-com-cust-desp;
+document.getElementById("fat").textContent=money(fat);document.getElementById("comv").textContent=money(com);document.getElementById("despv").textContent=money(desp);document.getElementById("cust").textContent=money(cust);document.getElementById("lucro").textContent=money(lucro);document.getElementById("lucro").className=lucro>=0?"profit":"loss";
+document.getElementById("resumo").innerHTML=`Faturamento bruto: <b>${money(fat)}</b><br>− Comissões: <b>${money(com)}</b><br>− Custos de produtos: <b>${money(cust)}</b><br>− Despesas: <b>${money(desp)}</b><br><b>Resultado líquido estimado: ${money(lucro)}</b>`;
+document.getElementById("listaAtend").innerHTML=table(db.atend,[["Data","data"],["Cliente","cliente"],["Serviço","serv"],["Profissional","prof"],["Valor","valor"],["Comissão","com"],["Custo","custo"]],x=>`<button class="del" onclick="del('atend',${x.id})">Excluir</button>`);
+let map={};db.atend.forEach(x=>{map[x.prof||"Sem profissional"]=(map[x.prof||"Sem profissional"]||0)+x.com});let arr=Object.entries(map);
+document.getElementById("listaCom").innerHTML=arr.length?`<table><tr><th>Profissional</th><th>Comissão</th></tr>${arr.map(x=>`<tr><td>${x[0]}</td><td>${money(x[1])}</td></tr>`).join("")}</table>`:"<div class='empty'>Nenhuma comissão registrada.</div>";
+document.getElementById("listaDesp").innerHTML=table(db.desp,[["Data","data"],["Descrição","desc"],["Categoria","cat"],["Valor","valor"],["Status","status"]],x=>`<button class="del" onclick="del('desp',${x.id})">Excluir</button>`);
+document.getElementById("listaEst").innerHTML=table(db.est,[["Produto","nome"],["Qtd.","qtd"],["Custo unit.","custo"],["Mínimo","min"]],x=>`<span style="color:${x.qtd<=x.min?'#a64b4b':'#477a54'}">${x.qtd<=x.min?'COMPRAR':'OK'}</span> <button class="del" onclick="del('est',${x.id})">Excluir</button>`);
+document.getElementById("listaAgenda").innerHTML=table(db.agenda,[["Data","data"],["Hora","hora"],["Cliente","cliente"],["Serviço","serv"],["Valor","valor"]],x=>`<button class="del" onclick="del('agenda',${x.id})">Excluir</button>`);
+}
+function table(rows,cols,action){if(!rows.length)return "<div class='empty'>Nenhum registro.</div>";return `<table><tr>${cols.map(c=>`<th>${c[0]}</th>`).join("")}<th>Ação</th></tr>${rows.slice().reverse().map(x=>`<tr>${cols.map(c=>`<td>${c[1].includes("valor")||c[1]=="com"||c[1]=="custo"?money(x[c[1]]):x[c[1]]||""}</td>`).join("")}<td>${action(x)}</td></tr>`).join("")}</table>`}
+function exportar(){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:"application/json"}));a.download="backup-amanda-castro.json";a.click()}
+function importar(){arquivo.click()}
+function lerArquivo(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save();alert("Dados importados!")}catch{alert("Arquivo inválido.")}};r.readAsText(f)}
+render();
+</script>
+
+<div id="saveStatus" style="position:fixed;right:12px;bottom:12px;background:#fff;border:1px solid #e5ddd3;border-radius:20px;padding:8px 12px;font-size:11px;box-shadow:0 2px 10px rgba(0,0,0,.08);z-index:20">💾 Salvamento automático ativo</div>
+<script>
+let deferredInstallPrompt=null;
+window.addEventListener("beforeinstallprompt", e=>{
+  e.preventDefault(); deferredInstallPrompt=e;
+  const b=document.getElementById("installBtn"); if(b)b.style.display="inline-block";
+});
+async function instalarApp(){
+  if(!deferredInstallPrompt){ alert("Se a opção de instalação não aparecer, use o menu do navegador e escolha “Adicionar à tela inicial” ou “Instalar aplicativo”."); return; }
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt=null;
+  document.getElementById("installBtn").style.display="none";
+}
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{}));
+}
+function atualizarStatus(){
+  const s=document.getElementById("saveStatus");
+  if(s){s.textContent="✓ Tudo salvo automaticamente"; setTimeout(()=>s.textContent="💾 Salvamento automático ativo",1500);}
+}
+const _saveOriginal=save;
+save=function(){_saveOriginal();atualizarStatus();}
+window.addEventListener("pagehide",()=>{try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){}});
+</script>
+
+</body>
+</html>
