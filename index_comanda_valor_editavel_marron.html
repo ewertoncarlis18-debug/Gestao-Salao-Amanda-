@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#9a7b66">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Amanda Castro">
+<title>Amanda Castro • Gestão do Salão</title>
+<style>
+:root{--brown:#6b5847;--gold:#b99a63;--cream:#f7f3ee;--line:#e5ddd3;--text:#3f3933;--green:#477a54;--red:#8b6b55}
+*{box-sizing:border-box}body{margin:0;background:#f3eee8;color:var(--text);font-family:Arial,sans-serif}header{background:var(--brown);color:#fff;padding:18px 20px;position:sticky;top:0;z-index:5}header h1{margin:0;font-size:20px}header small{opacity:.85}header .top{display:flex;justify-content:space-between;align-items:center;gap:10px}.logout{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:8px;padding:8px 10px;font-weight:700}
+nav{display:flex;gap:7px;overflow:auto;padding:10px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:70px;z-index:4}nav button{border:0;background:var(--cream);color:var(--brown);padding:10px 13px;border-radius:20px;white-space:nowrap;font-weight:700}nav button.active{background:var(--brown);color:#fff}main{max-width:1200px;margin:auto;padding:18px}.tab{display:none}.tab.active{display:block}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}.card span{font-size:12px;color:#777}.card strong{display:block;font-size:22px;margin-top:8px;color:var(--brown)}section.box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}h2{margin:0 0 14px;color:var(--brown);font-size:18px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}label{font-size:12px;font-weight:700;color:#665b51}input,select{width:100%;padding:11px;border:1px solid #d9d0c7;border-radius:9px;margin-top:5px;background:#fff}button.primary{background:var(--brown);color:#fff;border:0;border-radius:9px;padding:11px 16px;font-weight:700;margin-top:12px}button.secondary{background:var(--cream);color:var(--brown);border:1px solid var(--line);border-radius:9px;padding:10px 14px;font-weight:700;margin-top:12px}table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left}th{background:var(--cream);color:var(--brown)}.del{border:0;background:#f6dddd;color:var(--red);padding:5px 8px;border-radius:7px}.kpi{font-size:13px;line-height:1.8}.profit{color:var(--green)!important}.loss{color:var(--red)!important}.note{font-size:12px;color:#777;margin-top:8px}.empty{color:#888;padding:15px 0}.sync{position:fixed;right:12px;bottom:12px;background:#fff;border:1px solid #e5ddd3;border-radius:20px;padding:8px 12px;font-size:11px;box-shadow:0 2px 10px rgba(0,0,0,.08);z-index:20}.hidden{display:none!important}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modalbox{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:18px;border:1px solid var(--line);box-shadow:0 15px 50px rgba(0,0,0,.18)}
+.modalbox h2{margin-bottom:10px}.modalactions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}.modalactions button{margin-top:0}
+.retry{display:inline-block;margin-top:10px}
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:#f3eee8}#login .loginbox{width:min(430px,100%);background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.08)}#login h1{color:var(--brown);margin:0 0 4px}#login p{color:#777;font-size:13px}#login button{width:100%;margin-top:14px}.error{color:var(--red);font-size:12px;margin-top:10px}.ok{color:var(--green);font-size:12px;margin-top:10px}
+@media(max-width:600px){main{padding:10px}.cards{grid-template-columns:1fr 1fr}.card{padding:12px}.card strong{font-size:18px}table{font-size:11px}th,td{padding:7px}nav{top:70px}}
+.assistant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.ask{display:flex;gap:8px;align-items:stretch}.ask input{flex:1}.answer{white-space:pre-wrap;background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:14px;min-height:90px;line-height:1.5}.suggest{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:left;color:var(--text);cursor:pointer}.suggest:hover{border-color:var(--gold)}.mini{font-size:12px;color:#777}</style>
+
+<style>
+.ai-fab{position:fixed;right:18px;bottom:18px;z-index:40;border:0;border-radius:999px;padding:14px 18px;background:#222;color:#fff;font-weight:700;box-shadow:0 8px 25px #0002;cursor:pointer}
+.ai-panel{position:fixed;right:18px;bottom:76px;width:min(430px,calc(100vw - 36px));height:min(650px,78vh);z-index:45;background:#fff;border:1px solid #ddd;border-radius:20px;box-shadow:0 18px 55px #0003;display:flex;flex-direction:column;overflow:hidden}
+.ai-panel.hidden{display:none}
+.ai-head{padding:14px 16px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between}
+.ai-head strong{font-size:17px}.ai-close{border:0;background:transparent;font-size:22px;cursor:pointer}
+.ai-msgs{flex:1;overflow:auto;padding:14px;background:#faf9f7}
+.ai-msg{max-width:88%;padding:10px 12px;border-radius:15px;margin:7px 0;line-height:1.4;white-space:pre-wrap}
+.ai-msg.user{margin-left:auto;background:#222;color:#fff;border-bottom-right-radius:5px}
+.ai-msg.bot{margin-right:auto;background:#fff;border:1px solid #e8e3dd;border-bottom-left-radius:5px}
+.ai-quick{display:flex;gap:6px;overflow:auto;padding:8px;border-top:1px solid #eee}
+.ai-quick button{white-space:nowrap;border:1px solid #ddd;background:#fff;border-radius:999px;padding:7px 10px;cursor:pointer}
+.ai-compose{display:flex;gap:8px;padding:10px;border-top:1px solid #eee}
+.ai-compose textarea{flex:1;resize:none;min-height:42px;max-height:110px;border:1px solid #ddd;border-radius:12px;padding:10px;font:inherit}
+.ai-send{border:0;border-radius:12px;padding:0 15px;background:#222;color:#fff;font-weight:700;cursor:pointer}
+.ai-send:disabled{opacity:.5}
+.ai-thinking{opacity:.65;font-style:italic}
+</style>
+
+<style>
+
+
+/* ===== Amanda Castro — Visual Profissional ===== */
+:root{
+  --red:#8b6b55; --red2:#b5967f; --red-soft:#f3ebe4;
+  --ink:#17181b; --muted:#72757a; --line:#eceef1;
+  --bg:#f7f8fa; --white:#fff; --green:#19a974;
+}
+body{background:var(--bg);color:var(--ink)}
+.app-shell{display:flex;min-height:100vh}
+.ai-sidebar{
+ position:fixed;left:0;top:0;bottom:0;width:258px;background:#fff;
+ color:var(--ink);z-index:60;padding:20px 14px;overflow:auto;
+ border-right:1px solid var(--line);box-shadow:3px 0 20px #00000005
+}
+.ai-sidebar .brand{font-size:18px;font-weight:800;padding:5px 10px 18px;letter-spacing:-.02em}
+.ai-sidebar .brand span{color:var(--red)}
+.ai-sidebar .group-title{
+ font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;
+ color:#a0a3a8;padding:16px 10px 7px
+}
+.ai-sidebar button{
+ width:100%;display:flex;align-items:center;gap:10px;text-align:left;border:0;
+ background:transparent;color:#4a4d52;padding:10px 11px;border-radius:11px;
+ margin:2px 0;cursor:pointer;font:inherit;font-size:14px;transition:.15s
+}
+.ai-sidebar button:hover{background:#f7f7f8;color:var(--red)}
+.ai-sidebar button.active{background:var(--red);color:#fff;box-shadow:0 7px 16px #8b6b5524}
+.ai-sidebar .ai-new{background:var(--red)!important;color:#fff!important;font-weight:700!important;margin-bottom:5px}
+.ai-history{max-height:34vh;overflow:auto}
+.ai-history button{font-size:12.5px}
+.ai-history button:before{content:"💬";font-size:12px}
+.ai-content{margin-left:258px;width:calc(100% - 258px);min-width:0}
+.ai-menu-btn{position:fixed;left:12px;top:12px;z-index:70;border:0;background:var(--red);color:#fff;border-radius:10px;padding:9px 11px;display:none}
+.ai-overlay{display:none}
+
+#visaoAmanda.ai-dashboard{
+ padding:26px 28px 34px;max-width:none;margin:0;background:var(--bg);min-height:100vh
+}
+.ai-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.ai-welcome h1{font-size:28px;letter-spacing:-.04em;margin:0}
+.ai-welcome p{margin:5px 0 0;color:var(--muted)}
+.ai-search{
+ width:min(390px,42vw);height:42px;background:#fff;border:1px solid var(--line);
+ border-radius:12px;padding:0 15px;color:#777
+}
+.ai-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.ai-card{
+ background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;
+ box-shadow:0 3px 15px #00000005;min-height:105px
+}
+.ai-card .label{font-size:12px;color:#777}.ai-card .value{font-size:25px;font-weight:800;margin-top:7px;letter-spacing:-.03em}
+.ai-card.negative .value{color:var(--red)}
+.ai-icon{
+ width:40px;height:40px;border-radius:50%;background:var(--red-soft);color:var(--red);
+ display:flex;align-items:center;justify-content:center;float:left;margin-right:11px;font-size:18px
+}
+.ai-sections{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:13px;margin-top:13px}
+.ai-box{
+ background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;
+ box-shadow:0 3px 15px #00000005
+}
+.ai-box.wide{grid-column:span 2}
+.ai-box h3{margin:0 0 13px;font-size:15px}.ai-box ul{padding-left:18px;margin:0}.ai-box li{margin:7px 0;color:#555}
+.ai-empty{color:#999}
+.ai-insight{
+ margin-top:13px;background:linear-gradient(105deg,#fff,#fff6f7);border:1px solid #f3d4d7;
+ border-radius:16px;padding:17px 20px
+}
+.ai-insight strong{font-size:14px;color:var(--ink)}.ai-insight p{margin:5px 0 0;color:#555}
+.ai-nav-badge{margin-left:auto;background:#fff;color:var(--red);border-radius:99px;padding:2px 6px;font-size:10px;font-weight:800}
+.ai-nav-divider{height:1px;background:var(--line);margin:12px 6px}
+
+@media(max-width:900px){
+ .ai-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ai-sections{grid-template-columns:1fr 1fr}
+ .ai-box.wide{grid-column:span 2}
+}
+@media(max-width:760px){
+ #visaoAmanda{margin-left:0!important}
+ .ai-sidebar{transform:translateX(-100%);width:275px}.ai-sidebar.open{transform:translateX(0)}
+ .ai-content{margin-left:0;width:100%}.ai-menu-btn{display:block}
+ .ai-overlay.show{display:block;position:fixed;inset:0;background:#0006;z-index:55}
+ body.ai-open{overflow:hidden}
+ #visaoAmanda.ai-dashboard{padding:18px 13px 25px}
+ .ai-topbar{display:block}.ai-search{width:100%;margin-top:14px}
+ .ai-welcome h1{font-size:24px}
+ .ai-cards{grid-template-columns:1fr 1fr}
+ .ai-sections{grid-template-columns:1fr}.ai-box.wide{grid-column:auto}
+}
+</style>
+
+<style id="final-professional-theme">
+:root{
+  --ac-red:#9a7b66;
+  --ac-red-dark:#7a5d49;
+  --ac-red-soft:#f3ebe4;
+  --ac-bg:#f7f8fa;
+  --ac-white:#fff;
+  --ac-text:#17191d;
+  --ac-muted:#747980;
+  --ac-line:#e8eaee;
+  --ac-green:#17a673;
+}
+body{background:var(--ac-bg)!important;color:var(--ac-text)!important;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif!important}
+header,#nav{display:none!important}
+#app{margin-left:258px;background:var(--ac-bg);min-height:100vh}
+#app main{max-width:none;padding:0 28px 35px}
+.tab{padding-top:20px}
+section.box,.card{background:#fff!important;border:1px solid var(--ac-line)!important;border-radius:16px!important;box-shadow:0 3px 16px rgba(20,25,35,.045)!important}
+section.box{padding:18px!important}
+h2{color:var(--ac-text)!important}
+button.primary{background:var(--ac-red)!important;border-radius:10px!important}
+button.secondary{background:#fff!important;color:var(--ac-red)!important;border:1px solid #dfcfc2!important}
+input,select{border-color:#e1e4e8!important;border-radius:10px!important}
+th{background:#fafbfc!important;color:#555!important}
+.del{background:#f3ebe4!important;color:var(--ac-red)!important}
+.cards{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:13px!important}
+.card{padding:18px!important;min-height:108px}
+.card span{color:#777!important}.card strong{color:var(--ac-text)!important;font-size:25px!important}
+.card:last-child strong,.loss{color:var(--ac-red)!important}
+#inicio>.cards:after{display:none}
+#inicio .box{margin-top:13px}
+#login{background:#f7f8fa!important}
+#login .loginbox{border:1px solid var(--ac-line)!important;box-shadow:0 10px 35px rgba(20,25,35,.08)!important}
+#login h1{color:var(--ac-red)!important}
+.sync{border-color:var(--ac-line)!important}
+@media(max-width:760px){
+  #app{margin-left:0}
+  #app main{padding:0 13px 25px}
+  .cards{grid-template-columns:1fr 1fr!important}
+  .card strong{font-size:19px!important}
+}
+</style>
+
+<style id="final-sidebar">
+.ai-sidebar{
+  width:258px!important;background:#fff!important;color:#1b1d21!important;
+  border-right:1px solid #e8eaee!important;box-shadow:3px 0 22px rgba(20,25,35,.04)!important;
+  padding:20px 14px!important
+}
+.ai-sidebar .brand{font-size:19px!important;font-weight:800!important;color:#17191d!important}
+.ai-sidebar .brand span{color:#9a7b66!important}
+.ai-sidebar .group-title{color:#a0a4aa!important;font-size:10px!important;font-weight:800!important}
+.ai-sidebar button{color:#4e535a!important}
+.ai-sidebar button:hover{background:#f3ebe4!important;color:#9a7b66!important}
+.ai-sidebar button.active{background:#9a7b66!important;color:#fff!important;box-shadow:0 8px 18px rgba(217,35,50,.20)!important}
+.ai-sidebar .ai-new{background:#9a7b66!important;color:#fff!important}
+</style>
+
+<style>
+.final-topbar{
+  margin-left:258px;background:#fff;border-bottom:1px solid #e8eaee;height:72px;
+  display:flex;align-items:center;justify-content:space-between;padding:0 28px;
+  position:sticky;top:0;z-index:30
+}
+.final-topbar .search{width:min(420px,45vw);height:42px;border:1px solid #e8eaee;border-radius:12px;padding:0 15px;background:#f8f9fa;color:#777}
+.final-topbar .profile{display:flex;align-items:center;gap:10px;font-size:13px}
+.final-topbar .avatar{width:38px;height:38px;border-radius:50%;background:#9a7b66;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.final-topbar .bell{font-size:20px;color:#555;margin-right:8px}
+@media(max-width:760px){
+ .final-topbar{margin-left:0;height:62px;padding:0 13px;padding-left:58px}
+ .final-topbar .search{width:52%;font-size:11px}
+ .final-topbar .profile span{display:none}
+}
+</style>
+
+<style>
+#visaoAmanda{background:#f7f8fa!important}
+#visaoAmanda .ai-cards{grid-template-columns:repeat(4,minmax(0,1fr))}
+#visaoAmanda .ai-card{border:1px solid #e8eaee!important;background:#fff!important}
+#visaoAmanda .ai-card:before{background:#9a7b66!important}
+#visaoAmanda .ai-insight{background:linear-gradient(105deg,#fff,#fff5f6)!important;border-color:#f2d3d7!important}
+#visaoAmanda .ai-insight strong{color:#17191d!important}
+#visaoAmanda .ai-sections{grid-template-columns:1.55fr 1fr 1fr!important}
+#visaoAmanda .ai-box{background:#fff!important;border-color:#e8eaee!important}
+@media(max-width:900px){#visaoAmanda .ai-cards{grid-template-columns:1fr 1fr!important}#visaoAmanda .ai-sections{grid-template-columns:1fr 1fr!important}}
+@media(max-width:760px){#visaoAmanda .ai-cards{grid-template-columns:1fr 1fr!important}#visaoAmanda .ai-sections{grid-template-columns:1fr!important}}
+</style>
+
+<style id="ac-white-red-dashboard">
+:root{
+  --ac-red:#9a7b66;--ac-red-dark:#7a5d49;--ac-red-soft:#f3ebe4;
+  --ac-bg:#f7f8fa;--ac-white:#fff;--ac-black:#15171a;--ac-gray:#73777f;
+  --ac-line:#e7e9ed;--ac-green:#16a673;
+}
+html,body{background:var(--ac-bg)!important;color:var(--ac-black)!important}
+header,#nav{display:none!important}
+#app{margin-left:258px!important;background:var(--ac-bg)!important;min-height:100vh}
+#app main{padding:0 28px 35px!important;max-width:none!important}
+#inicio{padding-top:24px!important}
+#inicio h1{font-size:28px!important;color:var(--ac-black)!important;margin:0}
+#inicio .dashboard-sub{color:var(--ac-gray);margin:4px 0 22px}
+#inicio .cards{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:13px!important}
+#inicio .card{
+  background:#fff!important;border:1px solid var(--ac-line)!important;border-radius:16px!important;
+  padding:18px!important;box-shadow:0 4px 18px rgba(20,25,35,.045)!important;min-height:118px!important
+}
+#inicio .card:before{content:"";display:block;width:34px;height:34px;border-radius:50%;background:var(--ac-red-soft);margin-bottom:8px}
+#inicio .card span{color:#70757d!important;font-size:12px!important}
+#inicio .card strong{color:var(--ac-black)!important;font-size:24px!important}
+#inicio .card strong.loss,#inicio .card strong.negative{color:var(--ac-red)!important}
+#inicio .dash-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:13px;margin-top:13px}
+#inicio .dash-box{
+  background:#fff;border:1px solid var(--ac-line);border-radius:16px;padding:18px;
+  box-shadow:0 4px 18px rgba(20,25,35,.045)
+}
+#inicio .dash-box h3{margin:0 0 14px;font-size:15px;color:var(--ac-black)}
+#inicio .wide{grid-column:span 1}
+#inicio .chart{height:230px;display:flex;align-items:flex-end;gap:8px;padding:15px 5px 24px;border-bottom:1px solid #eee;position:relative}
+#inicio .bar{flex:1;max-width:46px;background:linear-gradient(180deg,#b5967f,#9a7b66);border-radius:7px 7px 2px 2px;position:relative}
+#inicio .bar small{position:absolute;top:calc(100% + 7px);left:50%;transform:translateX(-50%);color:#858990;font-size:10px;white-space:nowrap}
+#inicio .bar em{display:none;position:absolute;top:-24px;left:50%;transform:translateX(-50%);font-style:normal;font-size:10px;color:#555;white-space:nowrap}
+#inicio .bar:hover em{display:block}
+#inicio .dash-list{margin:0;padding:0;list-style:none}
+#inicio .dash-list li{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid #f0f1f3;font-size:13px}
+#inicio .dot{width:8px;height:8px;border-radius:50%;background:var(--ac-red);flex:none}
+#inicio .pill{margin-left:auto;background:var(--ac-red-soft);color:var(--ac-red);border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700}
+#inicio .account{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #eee;border-radius:12px;margin-bottom:9px}
+#inicio .account .circle{width:34px;height:34px;border-radius:50%;background:var(--ac-red-soft);color:var(--ac-red);display:flex;align-items:center;justify-content:center;font-weight:800}
+#inicio .account b{display:block}.muted{color:#888;font-size:11px}
+#inicio .bottom-banner{margin-top:13px;background:#fff;border:1px solid #e7e9ed;border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+#inicio .ai-cta{background:var(--ac-red);color:#fff;border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer}
+#inicio .old-summary{display:none}
+.box,section.box,.card{background:#fff!important;border-color:var(--ac-line)!important;color:var(--ac-black)!important}
+input,select,textarea{background:#fff!important;color:#17191d!important;border-color:#e0e3e7!important}
+button.primary{background:var(--ac-red)!important;color:#fff!important;border-color:var(--ac-red)!important}
+button.secondary{background:#fff!important;color:var(--ac-red)!important;border-color:#dfcfc2!important}
+.del{background:var(--ac-red-soft)!important;color:var(--ac-red)!important}
+@media(max-width:900px){#inicio .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}#inicio .dash-grid{grid-template-columns:1fr}}
+@media(max-width:760px){
+  #app{margin-left:0!important}
+  #app main{padding:0 13px 25px!important}
+  #inicio .cards{grid-template-columns:1fr 1fr!important;gap:9px!important}
+  #inicio .card{padding:13px!important;min-height:100px!important}
+  #inicio .card strong{font-size:18px!important}
+  #inicio .bottom-banner{display:block}
+  #inicio .ai-cta{width:100%;margin-top:12px}
+}
+</style>
+
+<style id="ac-new-features">
+.social-login{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
+.social-login button{background:#fff;border:1px solid #e5e7eb;color:#222;border-radius:10px;padding:11px;font-weight:700}
+.social-login .instagram-login{color:#9a7b66;border-color:#dfcfc2}
+.mini{color:#747980;font-size:12px;line-height:1.45}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.feature-item{border:1px solid #e7e9ed;border-radius:12px;padding:13px;background:#fff}
+.feature-item b{display:block}.feature-item small{color:#777}
+.receipt-print{display:none}
+@media print{
+ body>*{display:none!important}
+ .receipt-print{display:block!important;padding:30px;font-family:Arial;color:#111}
+}
+.comanda-item{display:flex;justify-content:space-between;align-items:center;border:1px solid #eee;border-radius:10px;padding:10px;margin:7px 0}
+.comanda-total{font-size:22px;font-weight:800;color:#9a7b66}
+.frac{color:#9a7b66;font-weight:700}
+</style>
+</head>
+<body>
+<div id="aiOverlay" class="ai-overlay" onclick="fecharMenuLateral()"></div>
+<button class="ai-menu-btn" onclick="abrirMenuLateral()">☰</button>
+<aside id="aiSidebar" class="ai-sidebar" style="display:none">
+<div class="brand"><span>AC</span> Amanda Castro</div>
+<div class="group-title">Menu</div>
+<button class="active" onclick="abrirDashboardAC()">▦ Dashboard</button>
+<button onclick="abrirTabAC('agenda',this)">▣ Agenda</button>
+<button onclick="abrirAbaNova('comandas',this)">🧾 Comandas</button>
+<button onclick="abrirAbaNova('procedimentos',this)">✂️ Procedimentos</button>
+<button onclick="abrirAbaNova('lembretes',this)">🔔 Lembretes</button>
+<button onclick="abrirTabAC('atend',this)">◷ Atendimentos</button>
+<button onclick="abrirTabAC('com',this)">◌ Comissões</button>
+<button onclick="abrirTabAC('desp',this)">▤ Despesas</button>
+<button onclick="abrirTabAC('estoque',this)">▣ Estoque</button>
+<div class="group-title">Gestão</div>
+<button onclick="abrirAssistente()">🤖 Assistente Amanda</button>
+<button onclick="abrirHistoricoAC()">💬 Histórico de conversas</button>
+<button onclick="novaConversa()">＋ Nova conversa</button>
+<div class="group-title">Sistema</div>
+<button onclick="exportar()">⇩ Backup</button>
+<button onclick="sair()">↪ Sair</button>
+</aside>
+<div id="visaoAmanda" class="ai-dashboard" style="display:none;margin-left:258px;min-height:calc(100vh - 72px)">
+  <div class="ai-topbar">
+    <div class="ai-welcome">
+      <h1>Olá, Amanda!</h1>
+      <p>Aqui está o resumo do seu salão hoje.</p>
+    </div>
+    <input class="ai-search" placeholder="⌕  Buscar cliente, serviço ou informação..." onkeydown="if(event.key==='Enter') abrirAssistenteComTexto(this.value)">
+  </div>
+
+  <div class="ai-cards">
+    <div class="ai-card"><div class="ai-icon">↗</div><div class="label">Faturamento</div><div id="vFat" class="value">R$ 0,00</div></div>
+    <div class="ai-card"><div class="ai-icon">↓</div><div class="label">Despesas</div><div id="vDesp" class="value">R$ 0,00</div></div>
+    <div id="vResCard" class="ai-card"><div class="ai-icon">▣</div><div class="label">Resultado</div><div id="vRes" class="value">R$ 0,00</div></div>
+    <div class="ai-card"><div class="ai-icon">◎</div><div class="label">Clientes</div><div id="vCli" class="value">0</div></div>
+  </div>
+
+  <div class="ai-insight">
+    <strong>Resumo inteligente</strong>
+    <p id="vInsight">Analisando seus dados...</p>
+  </div>
+
+  <div class="ai-sections">
+    <div class="ai-box wide"><h3>📈 Evolução do faturamento</h3><div id="vGrafico" style="height:185px;display:flex;align-items:end;gap:8px;padding:10px 4px"></div></div>
+    <div class="ai-box"><h3>✂ Serviços mais realizados</h3><div id="vServicos"></div></div>
+    <div class="ai-box"><h3>📅 Próximos agendamentos</h3><div id="vAgenda"></div></div>
+    <div class="ai-box"><h3>📦 Estoque em atenção</h3><div id="vAtencao"></div></div>
+    <div class="ai-box"><h3>🧾 Contas</h3><div id="vContas"></div></div>
+  </div>
+</div>
+
+
+<div id="login">
+  <div class="loginbox">
+    <h1>AMANDA CASTRO</h1>
+    <p>Gestão do salão • acesso seguro na nuvem</p>
+    <label>E-mail<input id="loginEmail" type="email" autocomplete="username" placeholder="Seu e-mail"></label>
+    <label style="display:block;margin-top:10px">Senha<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Sua senha"></label>
+    <button class="primary" onclick="entrar()">Entrar</button>
+<div class="social-login">
+  <button onclick="entrarOAuth('google')">G&nbsp; Entrar com Google</button>
+  <button onclick="entrarOAuth('facebook')">f&nbsp; Entrar com Facebook</button>
+  <button class="instagram-login" onclick="entrarInstagram()">◎&nbsp; Entrar com Instagram</button>
+</div>
+<p class="mini">Google e Facebook usam o login seguro do Supabase. Instagram depende da configuração OAuth da Meta.</p>
+
+    <div id="loginMsg"></div>
+  </div>
+</div>
+
+
+<div id="finalTopbar" class="final-topbar">
+  <input class="search" placeholder="⌕  Buscar cliente, serviço ou informação..." onkeydown="if(event.key==='Enter') abrirAssistenteComTexto(this.value)">
+  <div class="profile"><span class="bell">♧</span><div class="avatar">A</div><span><b>Amanda Castro</b><br><small style="color:#888">Cabeleireira</small></span></div>
+</div>
+<div id="app" class="hidden">
+<header><div class="top"><div><h1>AMANDA CASTRO</h1><small>Gestão do salão • dados salvos na nuvem</small></div><button class="logout" onclick="sair()">Sair</button></div></header>
+<nav id="nav">
+<button class="active" onclick="tab('inicio',this)">Painel</button><button onclick="tab('atend',this)">Atendimentos</button><button onclick="tab('com',this)">Comissões</button><button onclick="tab('desp',this)">Despesas</button><button onclick="tab('estoque',this)">Estoque</button><button onclick="tab('agenda',this)">Agenda</button><button onclick="tab('assist',this)">🤖 Assistente</button>
+</nav>
+<main>
+<div id="inicio" class="tab active">
+  <div class="dashboard-sub">Visão geral do seu salão • dados sincronizados na nuvem</div>
+
+  <div class="cards">
+    <div class="card"><span>Faturamento</span><strong id="fat">R$ 0,00</strong></div>
+    <div class="card"><span>Despesas</span><strong id="despv">R$ 0,00</strong></div>
+    <div class="card"><span>Comissões</span><strong id="comv">R$ 0,00</strong></div>
+    <div class="card"><span>Custos de produtos</span><strong id="cust">R$ 0,00</strong></div>
+  </div>
+
+  <div class="dash-grid">
+    <section class="dash-box">
+      <h3>📈 Evolução do faturamento</h3>
+      <div id="acChart" class="chart"></div>
+    </section>
+
+    <section class="dash-box">
+      <h3>✂️ Serviços mais realizados</h3>
+      <div id="acServices"></div>
+    </section>
+
+    <section class="dash-box">
+      <h3>📅 Próximos agendamentos</h3>
+      <ul id="acAgenda" class="dash-list"></ul>
+    </section>
+
+    <section class="dash-box">
+      <h3>📦 Estoque em atenção</h3>
+      <ul id="acStock" class="dash-list"></ul>
+    </section>
+
+    <section class="dash-box">
+      <h3>🧾 Contas</h3>
+      <div id="acAccounts"></div>
+    </section>
+
+    <section class="dash-box">
+      <h3>📊 Resultado líquido estimado</h3>
+      <div style="font-size:30px;font-weight:800;margin:10px 0" id="lucro">R$ 0,00</div>
+      <div id="resumo" class="muted"></div>
+    </section>
+  </div>
+
+  <div class="bottom-banner">
+    <div>
+      <b style="font-size:17px">Organização hoje, resultados sempre.</b>
+      <div class="muted" style="margin-top:4px">Converse com sua assistente e descubra o que merece sua atenção.</div>
+    </div>
+    <button class="ai-cta" onclick="abrirAssistente()">Conversar com a Assistente Amanda →</button>
+  </div>
+
+  
+<div class="dash-box" style="margin-top:13px">
+<h3>⚡ Acesso rápido</h3>
+<div class="feature-grid">
+<div class="feature-item" onclick="abrirAbaNova('comandas')" style="cursor:pointer"><b>🧾 Comandas</b><small>Feche serviços e gere comprovantes.</small></div>
+<div class="feature-item" onclick="abrirAbaNova('procedimentos')" style="cursor:pointer"><b>✂️ Procedimentos</b><small>Valores e comissões pré-salvos.</small></div>
+<div class="feature-item" onclick="abrirAbaNova('lembretes')" style="cursor:pointer"><b>🔔 Lembretes</b><small>Confirmação dos horários.</small></div>
+<div class="feature-item" onclick="abrirTabAC('estoque')" style="cursor:pointer"><b>📦 Estoque</b><small>Custo fracionado por ml, g ou unidade.</small></div>
+</div></div>
+<div class="old-summary"></div>
+</div>
+<div id="atend" class="tab"><section class="box"><h2>Novo atendimento</h2><div class="grid"><label>Data<input id="aData" type="date"></label><label>Cliente<input id="aCliente" placeholder="Nome"></label><label>Serviço<input id="aServico" placeholder="Ex.: Luzes"></label><label>Profissional<input id="aProf" placeholder="Nome"></label><label>Valor cobrado<input id="aValor" type="number" step=".01"></label><label>Comissão %<input id="aPct" type="number" step=".1" value="0"></label><label>Custo do produto<input id="aCusto" type="number" step=".01" value="0"></label><label>Pagamento<select id="aPag"><option>Pix</option><option>Dinheiro</option><option>Débito</option><option>Crédito</option><option>Transferência</option></select></label></div><button class="primary" onclick="addAtend()">Registrar atendimento</button></section><section class="box"><h2>Histórico</h2><div id="listaAtend"></div></section></div>
+<div id="com" class="tab"><section class="box"><h2>Comissões por profissional</h2><div id="listaCom"></div></section></div>
+<div id="desp" class="tab"><section class="box"><h2>Nova despesa</h2><div class="grid"><label>Data<input id="dData" type="date"></label><label>Descrição<input id="dDesc" placeholder="Ex.: aluguel"></label><label>Categoria<input id="dCat" placeholder="Aluguel, produtos..."></label><label>Valor<input id="dValor" type="number" step=".01"></label><label>Status<select id="dStatus"><option>Pago</option><option>Pendente</option></select></label><label>Pagamento<select id="dPag"><option>Pix</option><option>Dinheiro</option><option>Débito</option><option>Crédito</option><option>Transferência</option></select></label></div><button class="primary" onclick="addDesp()">Registrar despesa</button></section><section class="box"><h2>Despesas registradas</h2><div id="listaDesp"></div></section></div>
+<div id="estoque" class="tab">
+<section class="box">
+<h2>📦 Novo produto</h2>
+<p class="mini">Informe o tamanho da embalagem e o custo total. O sistema calcula automaticamente o custo por ml, g ou unidade.</p>
+<div class="grid">
+<label>Produto<input id="pNome"></label>
+<label>Quantidade de embalagens<input id="pQtd" type="number" step=".001" min="0" placeholder="Ex.: 2"></label>
+<label>Custo por embalagem<input id="pCusto" type="number" step=".01" min="0" placeholder="Ex.: 70,00"></label>
+<label>Valor total em estoque<input id="pTotalEstoque" type="number" step=".01" readonly></label>
+<label>Conteúdo de cada embalagem<input id="pEmbQtd" type="number" step=".001" min="0" value="1"></label>
+<label>Unidade do conteúdo<select id="pEmbUn">
+<option value="un">unidade (un)</option>
+<option value="mg">miligrama (mg)</option>
+<option value="g">grama (g)</option>
+<option value="kg">quilograma (kg)</option>
+<option value="mcg">micrograma (mcg)</option>
+<option value="ml">mililitro (ml)</option>
+<option value="cl">centilitro (cl)</option>
+<option value="dl">decilitro (dl)</option>
+<option value="L">litro (L)</option>
+</select></label>
+<label>Preço de venda por embalagem<input id="pVenda" type="number" step=".01" min="0"></label>
+<label>Estoque mínimo (embalagens)<input id="pMin" type="number" step=".001" min="0" value="1"></label>
+</div>
+<div id="custoFracionadoPreview" class="mini" style="margin:8px 0"></div>
+<button class="primary" onclick="addProd()">Adicionar produto</button>
+</section>
+<section class="box"><h2>Estoque</h2><div id="listaEst"></div></section>
+</div>
+
+<div id="procedimentos" class="tab">
+  <section class="box">
+    <h2>✂️ Procedimentos pré-salvos</h2>
+    <p class="mini">Cadastre uma vez e use o procedimento na agenda, com valor e comissão preenchidos automaticamente.</p>
+    <div class="grid">
+      <label>Nome<input id="prNome" placeholder="Ex.: Luzes"></label>
+      <label>Categoria<input id="prCat" placeholder="Ex.: Coloração"></label>
+      <label>Valor<input id="prValor" type="number" step=".01"></label>
+      <label>Comissão %<input id="prPct" type="number" step=".1" value="0"></label>
+      <label>Custo estimado<input id="prCusto" type="number" step=".01" value="0"></label>
+      <label>Duração (min)<input id="prDur" type="number" value="60"></label>
+    </div>
+    <button class="primary" onclick="salvarProcedimento()">Salvar procedimento</button>
+  </section>
+  <section class="box"><h2>Procedimentos cadastrados</h2><div id="listaProcedimentos"></div></section>
+</div>
+
+<div id="comandas" class="tab">
+  <section class="box">
+    <h2>🧾 Nova comanda</h2>
+    <div class="grid">
+      <label>Cliente<input id="coCliente" list="listaClientesComanda" placeholder="Nome do cliente"></label>
+      <datalist id="listaClientesComanda"></datalist>
+      <label>Profissional<input id="coProf" list="listaProfComanda" placeholder="Profissional"></label>
+      <datalist id="listaProfComanda"></datalist>
+      <label>Procedimento
+        <select id="coServico"></select>
+      </label>
+      <label>Quantidade<input id="coQtd" type="number" step=".01" value="1" min=".01"></label>
+      <label>Valor unitário<input id="coValor" type="number" step=".01"></label>
+      <label>Desconto<input id="coDesconto" type="number" step=".01" value="0"></label>
+      <label>Pagamento<select id="coPag"><option>Pix</option><option>Dinheiro</option><option>Débito</option><option>Crédito</option><option>Transferência</option><option>Pendente</option></select></label>
+    </div>
+    <button class="secondary" onclick="adicionarItemComanda()">＋ Adicionar item</button>
+    <div id="itensComanda" style="margin-top:14px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:20px;align-items:center;margin-top:15px">
+      <b>Total: <span id="totalComanda">R$ 0,00</span></b>
+      <button class="primary" onclick="finalizarComanda()">Finalizar comanda</button>
+    </div>
+  </section>
+  <section class="box"><h2>Comandas recentes</h2><div id="listaComandas"></div></section>
+</div>
+
+<div id="lembretes" class="tab">
+  <section class="box">
+    <h2>🔔 Lembretes de clientes</h2>
+    <p class="mini">Veja os próximos horários e envie a confirmação diretamente pelo WhatsApp.</p>
+    <button class="primary" onclick="pedirPermissaoLembretes()">Ativar lembretes neste aparelho</button>
+    <div id="listaLembretes" style="margin-top:14px"></div>
+  </section>
+</div>
+<div id="agenda" class="tab">
+<section class="box">
+<h2>📅 Novo agendamento</h2>
+<div class="grid">
+<label>Data<input id="gData" type="date"></label>
+<label>Horário<input id="gHora" type="time"></label>
+<label>Cliente<input id="gCliente" list="listaClientesAgenda" placeholder="Nome"></label>
+<datalist id="listaClientesAgenda"></datalist>
+<label>Procedimento<select id="gServico" onchange="preencherProcedimentoAgenda()"></select></label>
+<label>Profissional<input id="gProf" list="listaProfAgenda" placeholder="Nome"></label>
+<datalist id="listaProfAgenda"></datalist>
+<label>Valor previsto<input id="gValor" type="number" step=".01"></label>
+<label>Comissão %<input id="gPct" type="number" step=".1" value="0"></label>
+</div>
+<button class="primary" onclick="addAgenda()">Agendar</button>
+</section>
+<section class="box"><h2>Agenda</h2><div id="listaAgenda"></div></section>
+</div>
+</main></div>
+<div id="assist" class="tab">
+<section class="box">
+<h2>🤖 Assistente Amanda</h2>
+<p class="mini">Primeira versão: usa os dados que já estão carregados do seu salão para fazer cálculos e análises. Nada é enviado para uma IA externa nesta etapa.</p>
+<div class="assistant-grid">
+<button class="suggest" onclick="perguntarAssistente('Quanto faturei este mês?')">💰 Faturamento do mês</button>
+<button class="suggest" onclick="perguntarAssistente('Quanto gastei este mês?')">📉 Despesas do mês</button>
+<button class="suggest" onclick="perguntarAssistente('Qual meu lucro estimado este mês?')">📊 Lucro estimado</button>
+<button class="suggest" onclick="perguntarAssistente('Quais produtos estão acabando?')">📦 Estoque baixo</button>
+<button class="suggest" onclick="perguntarAssistente('Quanto tenho de comissão registrada?')">👩‍💼 Comissões</button>
+<button class="suggest" onclick="perguntarAssistente('Quantos agendamentos tenho?')">📅 Agenda</button>
+</div>
+<div class="ask" style="margin-top:12px"><input id="assistPergunta" placeholder="Digite uma pergunta sobre o seu salão..."><button class="primary" onclick="perguntarAssistente()">Perguntar</button></div>
+<div id="assistResposta" class="answer" style="margin-top:12px">Olá, Amanda! 😊 Pergunte sobre faturamento, despesas, lucro, comissões, estoque ou agenda.</div>
+</section>
+<section class="box">
+<h2>📦 Resumo inteligente do estoque</h2>
+<div id="assistEstoque">Carregando...</div>
+</section>
+</div>
+<div id="clienteHistoricoModal" class="modal hidden">
+  <div class="modalbox" style="max-width:760px">
+    <h2>👤 Histórico da cliente</h2>
+    <div id="clienteHistoricoTitulo" class="mini"></div>
+    <div id="clienteHistoricoLista"></div>
+    <div class="modalactions">
+      <button class="secondary" onclick="fecharHistoricoCliente()">Fechar</button>
+    </div>
+  </div>
+</div>
+<div id="agendaModal" class="modal hidden">
+  <div class="modalbox">
+    <h2>Editar agendamento</h2>
+    <input id="editAgendaId" type="hidden">
+    <div class="grid">
+      <label>Data<input id="eData" type="date"></label>
+      <label>Horário<input id="eHora" type="time"></label>
+      <label>Cliente<input id="eCliente"></label>
+      <label>Serviço<input id="eServico"></label>
+      <label>Profissional<input id="eProf"></label>
+      <label>Valor previsto<input id="eValor" type="number" step=".01"></label>
+      <label>Status<select id="eStatus"><option>Agendado</option><option>Confirmado</option><option>Concluído</option><option>Cancelado</option></select></label>
+    </div>
+    <div class="modalactions">
+      <button class="secondary" onclick="fecharAgendaModal()">Cancelar</button>
+      <button class="primary" onclick="salvarEdicaoAgenda()">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+<div id="sync" class="sync hidden">☁️ Conectando...</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://rfhwnquhloxnynlkdiar.supabase.co';
+const SUPABASE_KEY='sb_publishable_9nHUEfJii8wPfYdMlMfziw__OPI1QWa';
+const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let state={atend:[],desp:[],est:[],agenda:[],com:[],clients:[],prof:[],servicos:[],historico:[]};
+const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const today=new Date().toISOString().slice(0,10);
+['aData','dData','gData'].forEach(x=>document.getElementById(x).value=today);
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement?.id==='assistPergunta')perguntarAssistente();});
+function msg(t,ok=false){const e=document.getElementById('loginMsg');e.className=ok?'ok':'error';e.textContent=t}
+function sync(t){const e=document.getElementById('sync');e.classList.remove('hidden');e.textContent=t; if(t.includes('✓'))setTimeout(()=>e.classList.add('hidden'),1600)}
+async function entrar(){const email=document.getElementById('loginEmail').value.trim(),password=document.getElementById('loginPassword').value;if(!email||!password)return msg('Informe e-mail e senha.');msg('Entrando...',true);try{const {data,error}=await client.auth.signInWithPassword({email,password});if(error){console.error('Supabase login error:',error);return msg('Erro de login: '+(error.message||'erro desconhecido')+' ['+(error.code||'sem código')+']');}if(!data.session)return msg('Login não concluído: o Supabase não retornou uma sessão.');msg('Login realizado! Aguarde...',true);}catch(e){console.error(e);msg('Erro de conexão: '+(e.message||e));}}
+async function sair(){await client.auth.signOut();}
+client.auth.onAuthStateChange(async (_event,session)=>{if(session){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('aiSidebar').style.display='block';document.getElementById('finalTopbar').style.display='flex';await carregar();await carregarNovosDados();preencherSelectProcedimentos();atualizarCustoFracionado();abrirDashboardAC();verificarLembretesAutomaticos();}else{document.getElementById('app').classList.add('hidden');document.getElementById('login').classList.remove('hidden');document.getElementById('aiSidebar').style.display='none';document.getElementById('finalTopbar').style.display='none';document.getElementById('visaoAmanda').style.display='none';}});
+(async()=>{const r=await client.auth.getSession();if(r.data.session){document.getElementById('login').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('aiSidebar').style.display='block';document.getElementById('finalTopbar').style.display='flex';await carregar();await carregarNovosDados();preencherSelectProcedimentos();atualizarCustoFracionado();abrirDashboardAC();verificarLembretesAutomaticos();}})();
+async function carregar(){
+  sync('☁️ Verificando a conexão com a nuvem...');
+  try{
+    const session=(await client.auth.getSession()).data.session;
+    if(!session?.user?.id){ sync('⚠️ Sessão não encontrada'); return; }
+    const uid=session.user.id;
+    const erros=[];
+    async function buscar(nome,consulta){
+      try{ const r=await consulta; if(r.error){erros.push(nome+': '+(r.error.message||'erro desconhecido')); console.error('Supabase '+nome,r.error); return []; } return r.data||[]; }
+      catch(e){ erros.push(nome+': '+(e.message||e)); console.error('Supabase '+nome,e); return []; }
+    }
+    // Consultas separadas: se uma tabela tiver problema, as outras continuam funcionando.
+    const financeiro=await buscar('financeiro',client.from('financeiro').select('*').eq('user_id',uid));
+    const comissoes=await buscar('comissoes',client.from('comissoes').select('*').eq('user_id',uid));
+    const produtos=await buscar('produtos',client.from('produtos').select('*').eq('user_id',uid));
+    const agenda=await buscar('agendamentos',client.from('agendamentos').select('*').eq('user_id',uid));
+    const clientes=await buscar('clientes',client.from('clientes').select('*').eq('user_id',uid));
+    const profissionais=await buscar('profissionais',client.from('profissionais').select('*').eq('user_id',uid));
+    state.clients=clientes;
+    state.prof=profissionais;
+    state.servicos=await buscar('servicos',client.from('servicos').select('*').eq('user_id',uid));
+    state.historico=await buscar('historico_procedimentos',client.from('historico_procedimentos').select('*').eq('user_id',uid).order('data_realizacao',{ascending:false}));
+    state.atend=financeiro.filter(x=>x.tipo==='Entrada'&&x.categoria==='Atendimento').map(x=>{let z={};try{z=JSON.parse(x.descricao||'{}')}catch{}return {...z,id:x.id,data:x.data,valor:Number(x.valor||0),pag:x.forma_pagamento||'',financeiro_id:x.id}});
+    state.desp=financeiro.filter(x=>x.tipo==='Saída').map(x=>({id:x.id,data:x.data,desc:x.descricao,cat:x.categoria,valor:Number(x.valor||0),status:x.forma_pagamento&&x.forma_pagamento.startsWith('Pendente|')?'Pendente':'Pago',pag:(x.forma_pagamento||'').replace(/^Pendente\||^Pago\|/, '')}));
+    state.com=comissoes; state.est=produtos; state.agenda=agenda; render();
+    if(erros.length){
+      sync('⚠️ Há um problema na nuvem');
+      const detalhe='Encontrei problema em:\n\n'+erros.join('\n')+'\n\nAs outras partes continuam disponíveis.';
+      document.getElementById('resumo').innerHTML='<b>⚠️ Atenção:</b><br>'+erros.map(e=>e.replace(/</g,'&lt;')).join('<br>');
+      console.error(detalhe);
+      alert(detalhe);
+    }else{ sync('✓ Tudo sincronizado na nuvem'); }
+  }catch(e){
+    console.error(e); sync('⚠️ Erro de conexão'); alert('Erro ao conectar ao Supabase: '+(e.message||e)+'\n\nVocê pode tocar em OK e tentar novamente.');
+  }
+}
+
+async function ensureByName(table,name,extra={}){if(!name)return null;const uid=(await client.auth.getUser()).data.user.id;let q=client.from(table).select('id').eq('user_id',uid).eq('nome',name).limit(1);const r=await q;if(r.error)throw r.error;if(r.data?.length)return r.data[0].id;const ins=await client.from(table).insert({nome:name,user_id:uid,...extra}).select('id').single();if(ins.error)throw ins.error;return ins.data.id;}
+async function addAtend(){const v=+aValor.value||0,p=+aPct.value||0,c=+aCusto.value||0;if(!aCliente.value||!aServico.value||!v)return alert('Preencha cliente, serviço e valor.');sync('☁️ Salvando atendimento...');try{const uid=(await client.auth.getUser()).data.user.id;const cliente_id=await ensureByName('clientes',aCliente.value.trim());const servico_id=await ensureByName('servicos',aServico.value.trim(),{preco:v});let profissional_id=null;if(aProf.value.trim())profissional_id=await ensureByName('profissionais',aProf.value.trim());const payload={cliente:aCliente.value.trim(),serv:aServico.value.trim(),prof:aProf.value.trim(),pct:p,custo:c};const ins=await client.from('financeiro').insert({user_id:uid,tipo:'Entrada',categoria:'Atendimento',descricao:JSON.stringify(payload),valor:v,data:aData.value,forma_pagamento:aPag.value,cliente_id}).select('id').single();if(ins.error)throw ins.error;const com=v*p/100;if(com){const ci=await client.from('comissoes').insert({user_id:uid,profissional_id,servico_id,data:aData.value,valor_servico:v,percentual:p,valor_comissao:com,pago:false,observacoes:'financeiro_id:'+ins.data.id});if(ci.error)throw ci.error;}clear(['aCliente','aServico','aProf','aValor']);aPct.value=0;aCusto.value=0;await carregar();}catch(e){console.error(e);sync('⚠️ Não foi possível salvar');alert('Não foi possível salvar. Tente novamente.');}}
+async function addDesp(){const v=+dValor.value||0;if(!dDesc.value||!v)return alert('Preencha descrição e valor.');sync('☁️ Salvando despesa...');try{const uid=(await client.auth.getUser()).data.user.id;const forma=(dStatus.value==='Pendente'?'Pendente|':'Pago|')+dPag.value;const ins=await client.from('financeiro').insert({user_id:uid,tipo:'Saída',categoria:dCat.value.trim()||'Outros',descricao:dDesc.value.trim(),valor:v,data:dData.value,forma_pagamento:forma}).select('id').single();if(ins.error)throw ins.error;if(dStatus.value==='Pendente'){const cp=await client.from('contas_pagar').insert({user_id:uid,descricao:dDesc.value.trim(),categoria:dCat.value.trim()||'Outros',valor:v,vencimento:dData.value,pago:false,forma_pagamento:dPag.value,observacoes:'financeiro_id:'+ins.data.id});if(cp.error)throw cp.error;}clear(['dDesc','dCat','dValor']);await carregar();}catch(e){console.error(e);sync('⚠️ Não foi possível salvar');alert('Não foi possível salvar. Tente novamente.');}}
+async function addProd(){
+  if(!pNome.value.trim())return alert('Informe o produto.');
+  const qtdEmb=Number(document.getElementById('pQtd').value||0);
+  const custoUnit=Number(document.getElementById('pCusto').value||0);
+  const embQtd=Number(document.getElementById('pEmbQtd').value||0);
+  const embUn=document.getElementById('pEmbUn').value||'un';
+  if(qtdEmb<=0)return alert('Informe uma quantidade de embalagens maior que zero.');
+  if(custoUnit<0)return alert('O custo não pode ser negativo.');
+  if(embQtd<=0)return alert('Informe o conteúdo da embalagem.');
+  sync('☁️ Salvando produto...');
+  try{
+    const uid=(await client.auth.getUser()).data.user.id;
+    const totalEstoque=qtdEmb*custoUnit;
+    const r=await client.from('produtos').insert({
+      user_id:uid,
+      nome:pNome.value.trim(),
+      quantidade:qtdEmb,
+      custo:custoUnit,
+      preco_venda:Number(pVenda.value||0),
+      estoque_minimo:Number(pMin.value||0),
+      embalagem_quantidade:embQtd,
+      embalagem_unidade:embUn,
+      custo_embalagem:custoUnit
+    }).select().single();
+    if(r.error)throw r.error;
+    clear(['pNome','pQtd','pCusto','pVenda']);
+    document.getElementById('pEmbQtd').value=1;
+    document.getElementById('pEmbUn').value='un';
+    document.getElementById('pTotalEstoque').value='';
+    pMin.value=1;
+    await carregar();
+    atualizarCustoFracionado();
+    alert('Produto adicionado!\n\nQuantidade: '+qtdEmb+' embalagem(ns)\nCusto por embalagem: '+money(custoUnit)+'\nValor total: '+money(totalEstoque));
+  }catch(e){
+    console.error(e);
+    alert('Não foi possível salvar o produto: '+(e.message||'erro desconhecido'));
+  }
+}
+async function addAgenda(){
+  if(!gData.value||!gCliente.value.trim())return alert('Informe data e cliente.');
+  sync('☁️ Salvando agendamento...');
+  try{
+    const uid=(await client.auth.getUser()).data.user.id;
+    const clienteNome=gCliente.value.trim();
+    const cliente_id=await ensureByName('clientes',clienteNome);
+    const servicoSelecionado=Number(gServico.value||0);
+    const servico_id=servicoSelecionado||null;
+    let profissional_id=null;
+    if(gProf.value.trim())profissional_id=await ensureByName('profissionais',gProf.value.trim());
+
+    const valor=Number(gValor.value||0);
+    const pct=Number(gPct.value||0);
+    const r=await client.from('agendamentos').insert({
+      user_id:uid,cliente_id,profissional_id,servico_id,
+      data:gData.value,horario:gHora.value,status:'Agendado',
+      observacoes:JSON.stringify({valor_previsto:valor,percentual_comissao:pct})
+    });
+    if(r.error)throw r.error;
+
+    clear(['gCliente','gServico','gProf','gValor','gPct']);
+    gPct.value=0;
+    await carregar();
+    alert('Agendamento salvo! A cliente ficou cadastrada e poderá ter histórico de procedimentos.');
+  }catch(e){
+    console.error(e);
+    alert('Não foi possível salvar o agendamento: '+(e.message||'erro desconhecido'));
+  }
+}
+function clear(ids){ids.forEach(x=>document.getElementById(x).value='')}
+async function delAtend(id){if(!confirm('Excluir este atendimento?'))return;sync('☁️ Excluindo...');const uid=(await client.auth.getUser()).data.user.id;await client.from('comissoes').delete().eq('user_id',uid).eq('observacoes','financeiro_id:'+id);const r=await client.from('financeiro').delete().eq('user_id',uid).eq('id',id);if(r.error)alert('Não foi possível excluir: '+(r.error.message||'erro desconhecido'));else await carregar()}
+async function delDesp(id){if(!confirm('Excluir esta despesa?'))return;sync('☁️ Excluindo...');const uid=(await client.auth.getUser()).data.user.id;const f=await client.from('financeiro').select('descricao').eq('user_id',uid).eq('id',id).single();if(f.data?.descricao){await client.from('contas_pagar').delete().eq('user_id',uid).eq('observacoes','financeiro_id:'+id)}const r=await client.from('financeiro').delete().eq('user_id',uid).eq('id',id);if(r.error)alert('Não foi possível excluir: '+(r.error.message||'erro desconhecido'));else await carregar()}
+async function delProd(id){if(!confirm('Excluir este produto?'))return;const uid=(await client.auth.getUser()).data.user.id;const r=await client.from('produtos').delete().eq('user_id',uid).eq('id',id);if(r.error)alert('Não foi possível excluir: '+(r.error.message||'erro desconhecido'));else await carregar()}
+async function delAgenda(id){if(!confirm('Excluir este agendamento?'))return;const uid=(await client.auth.getUser()).data.user.id;const r=await client.from('agendamentos').delete().eq('user_id',uid).eq('id',id);if(r.error)alert('Não foi possível excluir: '+(r.error.message||'erro desconhecido'));else await carregar()}
+
+function editarAgenda(id){
+  const x=state.agenda.find(a=>a.id===id);
+  if(!x)return;
+  const c=(state.clients||[]).find(y=>y.id===x.cliente_id);
+  const s=(state.servicos||[]).find(y=>y.id===x.servico_id);
+  const p=(state.prof||[]).find(y=>y.id===x.profissional_id);
+  document.getElementById('editAgendaId').value=x.id;
+  document.getElementById('eData').value=x.data||'';
+  document.getElementById('eHora').value=(x.horario||'').slice(0,5);
+  document.getElementById('eCliente').value=c?.nome||'';
+  document.getElementById('eServico').value=s?.nome||'';
+  document.getElementById('eProf').value=p?.nome||'';
+  let obs={};
+  try{obs=JSON.parse(x.observacoes||'{}')}catch{}
+  const m=(x.observacoes||'').match(/Valor previsto:\s*([\d.,]+)/i);
+  document.getElementById('eValor').value=obs.valor_previsto!=null?obs.valor_previsto:(m?String(m[1]).replace(',','.'):'');
+  document.getElementById('eStatus').value=x.status||'Agendado';
+  document.getElementById('agendaModal').classList.remove('hidden');
+}
+function fecharAgendaModal(){document.getElementById('agendaModal').classList.add('hidden');}
+async function salvarEdicaoAgenda(){
+  const id=Number(document.getElementById('editAgendaId').value);
+  const data=document.getElementById('eData').value;
+  const horario=document.getElementById('eHora').value;
+  const cliente=document.getElementById('eCliente').value.trim();
+  const servico=document.getElementById('eServico').value.trim();
+  const prof=document.getElementById('eProf').value.trim();
+  const valor=document.getElementById('eValor').value;
+  const status=document.getElementById('eStatus').value;
+  if(!id||!data||!horario||!cliente)return alert('Preencha data, horário e cliente.');
+  sync('☁️ Salvando alterações...');
+  try{
+    const uid=(await client.auth.getUser()).data.user.id;
+    const cliente_id=await ensureByName('clientes',cliente);
+    const servico_id=servico?await ensureByName('servicos',servico,{preco:+valor||0}):null;
+    const profissional_id=prof?await ensureByName('profissionais',prof):null;
+    const r=await client.from('agendamentos').update({
+      cliente_id,servico_id,profissional_id,data,horario,status,
+      observacoes:JSON.stringify({valor_previsto:Number(valor||0)})
+    }).eq('user_id',uid).eq('id',id);
+    if(r.error)throw r.error;
+    fecharAgendaModal();
+    await carregar();
+  }catch(e){
+    console.error(e);
+    alert('Não foi possível salvar a alteração: '+(e.message||'erro desconhecido'));
+    sync('⚠️ Falha ao salvar');
+  }
+}
+
+function tab(id,btn){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render()}
+function table(rows,cols,action){if(!rows.length)return "<div class='empty'>Nenhum registro.</div>";return `<table><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}<th>Ação</th></tr>${rows.map(x=>`<tr>${cols.map(c=>`<td>${c[2]?c[2](x[c[1]],x):x[c[1]]??''}</td>`).join('')}<td>${action(x)}</td></tr>`).join('')}</table>`}
+function custoFracionadoProduto(x){
+  const custo=Number(x.custo_embalagem||x.custo||0), qtd=Number(x.embalagem_quantidade||0), un=x.embalagem_unidade||'un';
+  if(!(custo>0&&qtd>0))return '—';
+  const conv=unidadeBaseEstoque(un);
+  return `${money(custo/(qtd*conv.fator))}/${conv.base}`;
+}
+function render(){let fat=state.atend.reduce((s,x)=>s+x.valor,0),com=state.com.reduce((s,x)=>s+Number(x.valor_comissao||0),0),cust=state.atend.reduce((s,x)=>s+Number(x.custo||0),0),desp=state.desp.reduce((s,x)=>s+x.valor,0),lucro=fat-com-cust-desp;document.getElementById('fat').textContent=money(fat);document.getElementById('comv').textContent=money(com);document.getElementById('despv').textContent=money(desp);document.getElementById('cust').textContent=money(cust);document.getElementById('lucro').textContent=money(lucro);document.getElementById('lucro').className=lucro>=0?'profit':'loss';document.getElementById('resumo').innerHTML=`Faturamento bruto: <b>${money(fat)}</b><br>− Comissões: <b>${money(com)}</b><br>− Custos de produtos: <b>${money(cust)}</b><br>− Despesas: <b>${money(desp)}</b><br><b>Resultado líquido estimado: ${money(lucro)}</b>`;
+document.getElementById('listaAtend').innerHTML=table(state.atend,[['Data','data'],['Cliente','cliente'],['Serviço','serv'],['Profissional','prof'],['Valor','valor',money],['Comissão','id',(_,x)=>money((Number(x.valor)||0)*Number(x.pct||0)/100)],['Custo','custo',money]],x=>`<button class='del' onclick='delAtend(${x.id})'>Excluir</button>`);
+document.getElementById('listaCom').innerHTML=state.com.length?`<table><tr><th>Data</th><th>Profissional</th><th>%</th><th>Comissão</th><th>Status</th><th>Ação</th></tr>${state.com.map(x=>{const p=(state.prof||[]).find(y=>y.id===x.profissional_id);return `<tr><td>${x.data||''}</td><td>${p?.nome||'—'}</td><td>${Number(x.percentual||0)}%</td><td>${money(x.valor_comissao)}</td><td>${x.pago?'Pago':'Pendente'}</td><td><button class='secondary' onclick='editarComissao(${x.id})'>Editar</button></td></tr>`}).join('')}</table>`:"<div class='empty'>Nenhuma comissão registrada.</div>";
+document.getElementById('listaDesp').innerHTML=table(state.desp,[['Data','data'],['Descrição','desc'],['Categoria','cat'],['Valor','valor',money],['Status','status']],x=>`<button class='del' onclick='delDesp(${x.id})'>Excluir</button>`);
+document.getElementById('listaEst').innerHTML=table(state.est,[['Produto','nome'],['Qtd.','quantidade',v=>numero(v)],['Custo/embalagem','custo_embalagem',money],['Valor total','id',(_,x)=>money(Number(x.quantidade||0)*Number(x.custo_embalagem||x.custo||0))],['Conteúdo','id',(_,x)=>`${numero(x.embalagem_quantidade)} ${x.embalagem_unidade||'un'}`],['Custo por unidade-base','id',(_,x)=>custoFracionadoProduto(x)],['Preço venda','preco_venda',money],['Mínimo','estoque_minimo',v=>numero(v)]],x=>`<span>${Number(x.quantidade)<=Number(x.estoque_minimo)?'COMPRAR':'OK'}</span> <button class='del' onclick='delProd(${x.id})'>Excluir</button>`);
+const agenda=state.agenda.map(x=>{
+  const c=(state.clients||[]).find(y=>y.id===x.cliente_id);
+  const s=(state.servicos||[]).find(y=>y.id===x.servico_id);
+  const p=(state.prof||[]).find(y=>y.id===x.profissional_id);
+  return {...x,cliente:c?.nome||'Cliente',serv:s?.nome||'—',prof:p?.nome||'—'};
+});
+renderAssistente();renderProcedimentos();preencherSelectProcedimentos();renderLembretes();renderComandas();
+document.getElementById('listaAgenda').innerHTML=table(
+  agenda,
+  [['Data','data'],['Hora','horario'],['Cliente','cliente'],['Serviço','serv'],['Profissional','prof'],['Status','status']],
+  x=>`<button class='secondary' onclick='abrirHistoricoCliente(${x.cliente_id})'>Histórico</button> <button class='secondary' onclick='editarAgenda(${x.id})'>Editar</button> <button class='primary' onclick='concluirAgendamento(${x.id})'>Concluir</button> <button class='del' onclick='delAgenda(${x.id})'>Excluir</button>`
+);}
+
+async function concluirAgendamento(id){
+  const x=state.agenda.find(a=>a.id===id);
+  if(!x)return;
+  const c=(state.clients||[]).find(y=>y.id===x.cliente_id);
+  const s=(state.servicos||[]).find(y=>y.id===x.servico_id);
+  const p=(state.prof||[]).find(y=>y.id===x.profissional_id);
+  if(!confirm(`Marcar o atendimento de ${c?.nome||'cliente'} como realizado?`))return;
+  sync('☁️ Registrando procedimento realizado...');
+  try{
+    const uid=(await client.auth.getUser()).data.user.id;
+    const valor=((x.observacoes||'').match(/valor_previsto[\\": ]+([0-9.,]+)/i)||[])[1] || '';
+    const r1=await client.from('agendamentos').update({status:'Concluído'}).eq('user_id',uid).eq('id',id);
+    if(r1.error)throw r1.error;
+    const r2=await client.from('historico_procedimentos').insert({
+      user_id:uid,
+      agendamento_id:id,
+      cliente_id:x.cliente_id,
+      profissional_id:x.profissional_id||null,
+      servico_id:x.servico_id||null,
+      data_realizacao:x.data,
+      procedimento:s?.nome||'Procedimento',
+      valor:Number(String(valor).replace(',','.'))||Number(s?.preco||0)||0,
+      observacoes:'Atendimento concluído pela agenda'
+    });
+    if(r2.error)throw r2.error;
+    await carregar();
+    abrirHistoricoCliente(x.cliente_id);
+  }catch(e){
+    console.error(e);
+    alert('Não foi possível registrar o procedimento: '+(e.message||'erro desconhecido'));
+  }
+}
+
+function abrirHistoricoCliente(clienteId){
+  const c=(state.clients||[]).find(x=>x.id===clienteId);
+  if(!c)return;
+  const hist=(state.historico||[]).filter(x=>Number(x.cliente_id)===Number(clienteId)).sort((a,b)=>String(b.data_realizacao||'').localeCompare(String(a.data_realizacao||'')));
+  const ag=(state.agenda||[]).filter(x=>Number(x.cliente_id)===Number(clienteId)&&String(x.status||'').toLowerCase()==='concluído');
+  document.getElementById('clienteHistoricoTitulo').innerHTML=
+    `<b>${c.nome}</b>${c.telefone?' · '+c.telefone:''}<br><span class="mini">${hist.length} procedimento(s) registrado(s)</span>`;
+  document.getElementById('clienteHistoricoLista').innerHTML=hist.length?`
+    <table><tr><th>Data</th><th>Procedimento</th><th>Profissional</th><th>Valor</th></tr>
+    ${hist.map(h=>{
+      const p=(state.prof||[]).find(y=>y.id===h.profissional_id);
+      return `<tr><td>${h.data_realizacao||''}</td><td>${h.procedimento||'—'}</td><td>${p?.nome||'—'}</td><td>${money(h.valor)}</td></tr>`;
+    }).join('')}</table>`:
+    `<div class="empty">Ainda não há procedimentos concluídos registrados para esta cliente.</div>`;
+  document.getElementById('clienteHistoricoModal').classList.remove('hidden');
+}
+function fecharHistoricoCliente(){document.getElementById('clienteHistoricoModal').classList.add('hidden');}
+
+function mesAtual(){
+  const agora=new Date();
+  const ano=agora.getFullYear(), mes=String(agora.getMonth()+1).padStart(2,'0');
+  return `${ano}-${mes}`;
+}
+function numero(v){return Number(v||0)}
+function resumoAssistente(){
+  const mes=mesAtual();
+  const atend=state.atend.filter(x=>String(x.data||'').startsWith(mes));
+  const desp=state.desp.filter(x=>String(x.data||'').startsWith(mes));
+  const fat=atend.reduce((s,x)=>s+numero(x.valor),0);
+  const com=state.com.filter(x=>String(x.data||'').startsWith(mes)).reduce((s,x)=>s+numero(x.valor_comissao),0);
+  const custo=atend.reduce((s,x)=>s+numero(x.custo),0);
+  const gastos=desp.reduce((s,x)=>s+numero(x.valor),0);
+  const lucro=fat-com-custo-gastos;
+  return {mes,atend,desp,fat,com,custo,gastos,lucro};
+}
+function renderAssistente(){
+  const baixos=state.est.filter(x=>numero(x.quantidade)<=numero(x.estoque_minimo));
+  const el=document.getElementById('assistEstoque');
+  if(!el)return;
+  if(!state.est.length){el.innerHTML='<div class="empty">Nenhum produto cadastrado ainda.</div>';return}
+  const valor=state.est.reduce((s,x)=>s+numero(x.quantidade)*numero(x.custo_embalagem||x.custo),0);
+  el.innerHTML=`<b>${state.est.length}</b> produtos cadastrados • valor aproximado em estoque: <b>${money(valor)}</b><br><br>`+
+    (baixos.length?`⚠️ <b>${baixos.length} produto(s) precisam de atenção:</b><br>${baixos.map(x=>`• ${x.nome}: ${numero(x.quantidade)} ${x.unidade||'un'} (mínimo ${numero(x.estoque_minimo)})`).join('<br>')}`:'✓ Nenhum produto está abaixo do estoque mínimo.');
+}
+function perguntarAssistente(pergunta){
+  const input=document.getElementById('assistPergunta');
+  const resposta=document.getElementById('assistResposta');
+  pergunta=(pergunta||input.value||'').trim();
+  if(!pergunta){resposta.textContent='Digite uma pergunta para mim. 😊';return}
+  input.value=pergunta;
+  const r=resumoAssistente();
+  const q=pergunta.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  let texto='';
+  if(q.includes('fatur')||q.includes('receita')){
+    texto=`No mês atual, você tem ${r.atend.length} atendimento(s) registrado(s), totalizando ${money(r.fat)} de faturamento bruto.`;
+  }else if(q.includes('despesa')||q.includes('gastei')||q.includes('gasto')){
+    texto=`No mês atual, as despesas registradas somam ${money(r.gastos)}.`;
+  }else if(q.includes('lucro')||q.includes('resultado')){
+    texto=`Seu resultado líquido estimado no mês atual é ${money(r.lucro)}.\n\nCálculo: ${money(r.fat)} de faturamento − ${money(r.com)} de comissões − ${money(r.custo)} de custos de produtos − ${money(r.gastos)} de despesas.`;
+  }else if(q.includes('comiss')){
+    texto=`No mês atual, as comissões registradas somam ${money(r.com)}.`;
+  }else if(q.includes('estoque')||q.includes('produto')||q.includes('acab')){
+    const baixos=state.est.filter(x=>numero(x.quantidade)<=numero(x.estoque_minimo));
+    texto=baixos.length?`Encontrei ${baixos.length} produto(s) no limite ou abaixo do estoque mínimo:\n\n${baixos.map(x=>`• ${x.nome}: ${numero(x.quantidade)} ${x.unidade||'un'} (mínimo ${numero(x.estoque_minimo)})`).join('\n')}`:`No momento, nenhum produto está no limite ou abaixo do estoque mínimo.`;
+  }else if(q.includes('agenda')||q.includes('agendamento')){
+    const hoje=new Date().toISOString().slice(0,10);
+    const proximos=state.agenda.filter(x=>x.data>=hoje).sort((a,b)=>String(a.data+a.horario).localeCompare(String(b.data+b.horario)));
+    texto=`Você tem ${state.agenda.length} agendamento(s) carregado(s). ${proximos.length} ainda estão para hoje ou para frente.`;
+    if(proximos.length){
+      const itens=proximos.slice(0,5).map(x=>{
+        const c=state.clients.find(y=>y.id===x.cliente_id);
+        return `• ${x.data} às ${(x.horario||'').slice(0,5)} — ${c?.nome||'Cliente'}`;
+      }).join('\n');
+      texto+=`\n\nPróximos:\n${itens}`;
+    }
+  }else{
+    texto=`Posso calcular ou consultar seus dados de faturamento, despesas, lucro estimado, comissões, estoque e agenda.\n\nExemplo: “Quanto faturei este mês?”`;
+  }
+  resposta.textContent=texto;
+}
+async function exportar(){
+  sync('☁️ Preparando backup...');
+  try{
+    const uid=(await client.auth.getUser()).data.user.id;
+    const tabelas=['financeiro','comissoes','produtos','agendamentos','clientes','profissionais','servicos','contas_pagar','contas_receber'];
+    const dados={};
+    for(const nome of tabelas){
+      const r=await client.from(nome).select('*').eq('user_id',uid);
+      if(r.error)throw new Error(nome+': '+r.error.message);
+      dados[nome]=r.data||[];
+    }
+    const blob=new Blob([JSON.stringify(dados,null,2)],{type:'application/json'});
+    const aEl=document.createElement('a');
+    aEl.href=URL.createObjectURL(blob);
+    aEl.download='backup-amanda-castro-'+new Date().toISOString().slice(0,10)+'.json';
+    aEl.click();
+    URL.revokeObjectURL(aEl.href);
+    sync('✓ Backup exportado');
+  }catch(e){
+    console.error(e);
+    sync('⚠️ Falha no backup');
+    alert('Não foi possível gerar o backup: '+(e.message||'erro desconhecido'));
+  }
+}
+</script>
+
+
+
+<div id="aiPanel" class="ai-panel hidden">
+  <div class="ai-head">
+    <div><strong>🤖 Assistente Amanda</strong><br><small>Seu salão, seus números, suas perguntas.</small></div>
+    <button class="ai-close" onclick="fecharAssistente()">×</button>
+  </div>
+  <div id="aiMsgs" class="ai-msgs"></div>
+  <div class="ai-quick">
+    <button onclick="perguntarRapido('Como estão minhas finanças este mês?')">💰 Finanças</button>
+    <button onclick="perguntarRapido('Como está meu estoque?')">📦 Estoque</button>
+    <button onclick="perguntarRapido('Quais são meus próximos agendamentos?')">📅 Agenda</button>
+    <button onclick="perguntarRapido('Quanto preciso faturar para cobrir minhas despesas?')">🎯 Meta</button>
+  </div>
+  <div class="ai-compose">
+    <textarea id="aiInput" placeholder="Pergunte qualquer coisa sobre o seu salão..." onkeydown="aiEnter(event)"></textarea>
+    <button id="aiSend" class="ai-send" onclick="enviarPerguntaIA()">Enviar</button>
+  </div>
+</div>
+
+<script>
+/* ================= ASSISTENTE AMANDA =================
+   O assistente funciona localmente, sem depender de API paga.
+   Para segurança, a chamada ao modelo deverá ser feita
+   por uma Supabase Edge Function, nunca com chave secreta
+   dentro deste HTML.
+*/
+const AI_EDGE_FUNCTION = 'assistente-amanda';
+
+function abrirAssistente(){
+  document.getElementById('aiPanel').classList.remove('hidden');
+  if(!document.getElementById('aiMsgs').children.length){
+    addAIMsg('bot','Olá, Amanda! 💕 Eu sou sua Assistente Amanda.\\n\\nPosso analisar os dados do seu salão, fazer cálculos e responder suas dúvidas. O que você quer saber?');
+  }
+  setTimeout(()=>document.getElementById('aiInput').focus(),50);
+}
+function fecharAssistente(){document.getElementById('aiPanel').classList.add('hidden');}
+function addAIMsg(tipo,text){
+  const box=document.getElementById('aiMsgs');
+  const el=document.createElement('div');
+  el.className='ai-msg '+tipo;
+  el.textContent=text;
+  box.appendChild(el);
+  box.scrollTop=box.scrollHeight;
+  return el;
+}
+function aiEnter(e){
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    enviarPerguntaIA();
+  }
+}
+function perguntarRapido(q){
+  document.getElementById('aiInput').value=q;
+  enviarPerguntaIA();
+}
+
+function coletarContextoIA(){
+  const agora=new Date();
+  const mes=agora.getMonth(), ano=agora.getFullYear();
+  const fin=(state.financeiro||[]);
+  const receitas=fin.filter(x=>x.tipo==='Entrada' || x.tipo==='entrada');
+  const despesas=fin.filter(x=>x.tipo==='Saída' || x.tipo==='saida' || x.tipo==='saída');
+  const doMes=(arr)=>arr.filter(x=>{
+    const d=new Date((x.data||'')+'T12:00:00');
+    return d.getMonth()===mes && d.getFullYear()===ano;
+  });
+  const entradas=doMes(receitas).reduce((s,x)=>s+Number(x.valor||0),0);
+  const saidas=doMes(despesas).reduce((s,x)=>s+Number(x.valor||0),0);
+  const estoque=(state.produtos||[]).map(x=>({
+    nome:x.nome, quantidade:Number(x.quantidade||0),
+    minimo:Number(x.estoque_minimo||0), unidade:x.unidade||'un',
+    custo:Number(x.custo||0)
+  }));
+  const agenda=(state.agenda||[]).slice(0,30).map(x=>({
+    data:x.data,horario:x.horario,status:x.status,
+    cliente_id:x.cliente_id,servico_id:x.servico_id
+  }));
+  return {
+    hoje:agora.toISOString().slice(0,10),
+    mesAtual:agora.toISOString().slice(0,7),
+    financeiroMes:{entradas,saidas,resultado:entradas-saidas},
+    estoque,
+    agenda,
+    quantidadeClientes:(state.clients||[]).length,
+    quantidadeProfissionais:(state.prof||[]).length
+  };
+}
+
+async function enviarPerguntaIA(){
+  const input=document.getElementById('aiInput');
+  const btn=document.getElementById('aiSend');
+  const q=input.value.trim();
+  if(!q)return;
+  input.value='';
+  addAIMsg('user',q);
+  btn.disabled=true;
+  const thinking=addAIMsg('bot','Analisando seus dados… 🤔');
+  thinking.classList.add('ai-thinking');
+  try{
+    await new Promise(r=>setTimeout(r,350));
+    thinking.remove();
+    addAIMsg('bot',responderLocalmente(q));
+  }catch(e){
+    thinking.remove();
+    addAIMsg('bot','Não consegui analisar os dados agora. Tente novamente.');
+    console.error(e);
+  }finally{
+    btn.disabled=false;
+    input.focus();
+  }
+}
+
+function dinheiro(v){
+  return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+}
+function responderLocalmente(q){
+  const c=coletarContextoIA();
+  const s=q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const fin=state.financeiro||[];
+  const doMes=fin.filter(x=>String(x.data||'').slice(0,7)===c.mesAtual);
+  const entradas=doMes.filter(x=>['entrada','receita'].includes(String(x.tipo||'').toLowerCase())).reduce((a,x)=>a+Number(x.valor||0),0);
+  const saidas=doMes.filter(x=>['saida','saída','despesa'].includes(String(x.tipo||'').toLowerCase())).reduce((a,x)=>a+Number(x.valor||0),0);
+  const contasPagar=(state.contasPagar||[]).filter(x=>!x.pago).reduce((a,x)=>a+Number(x.valor||0),0);
+  const contasReceber=(state.contasReceber||[]).filter(x=>!x.pago).reduce((a,x)=>a+Number(x.valor||0),0);
+
+  if(s.includes('fatur')||s.includes('receita')||s.includes('entrada'))
+    return `💰 Faturamento registrado neste mês: ${dinheiro(entradas)} em entradas.`;
+  if(s.includes('despesa')||s.includes('gasto'))
+    return `📉 Despesas registradas neste mês: ${dinheiro(saidas)} em saídas.`;
+  if(s.includes('lucro')||s.includes('resultado'))
+    return `📊 Resultado estimado: ${dinheiro(entradas-saidas)}. Entradas: ${dinheiro(entradas)} | Saídas: ${dinheiro(saidas)}.`;
+  if(s.includes('estoque')||s.includes('produto')||s.includes('acabando')||s.includes('baixo')){
+    const baixos=c.estoque.filter(x=>x.quantidade<=x.minimo);
+    return baixos.length ? `📦 Produtos no mínimo ou abaixo:\n\n${baixos.map(x=>`• ${x.nome}: ${x.quantidade} ${x.unidade} (mínimo ${x.minimo})`).join('\n')}` : '📦 Não encontrei produtos no mínimo ou abaixo do mínimo.';
+  }
+  if(s.includes('receber')) return `💵 Contas a receber em aberto: ${dinheiro(contasReceber)}.`;
+  if(s.includes('pagar')||s.includes('contas')) return `🧾 Contas a pagar em aberto: ${dinheiro(contasPagar)}.`;
+  if(s.includes('cliente')) return `👩‍💼 Você tem ${c.quantidadeClientes} clientes cadastrados.`;
+  if(s.includes('comissao')){
+    const total=(state.comissoes||[]).reduce((a,x)=>a+Number(x.valor_comissao||0),0);
+    return `💼 Há ${state.comissoes?.length||0} lançamentos de comissão, totalizando ${dinheiro(total)}.`;
+  }
+  if(s.includes('agenda')||s.includes('agendamento')||s.includes('horario')){
+    const ag=(state.agenda||[]).filter(x=>x.data>=c.hoje && String(x.status||'').toLowerCase()!=='cancelado').slice(0,5);
+    return ag.length ? `📅 Próximos agendamentos:\n\n${ag.map(x=>`• ${x.data} às ${(x.horario||'').slice(0,5)} — ${x.status||'Agendado'}`).join('\n')}` : '📅 Não encontrei próximos agendamentos.';
+  }
+  if(s.includes('meta')||s.includes('quanto preciso')||s.includes('preciso faturar'))
+    return `🎯 Posso calcular sua meta. Diga, por exemplo: “Quero faturar R$ 5.000 este mês” ou “Tenho R$ 2.000 de contas para pagar”.`;
+  if(/\d+\s*[+\-*x×]\s*\d+/.test(s)){
+    const m=s.match(/-?\d+(?:[.,]\d+)?\s*[+\-*\/]\s*-?\d+(?:[.,]\d+)?/);
+    if(m){try{return `🧮 Resultado: ${Number(Function('"use strict";return ('+m[0].replace(/,/g,'.')+')')()).toLocaleString('pt-BR')}.`}catch{}}
+  }
+  return `Entendi. 💕 Posso analisar seus dados de finanças, estoque, agenda, clientes, comissões e contas, além de fazer cálculos.\n\nExperimente: “Quanto faturei este mês?”, “Quais produtos estão acabando?” ou “Como está meu lucro?”`;
+}
+
+</script>
+
+<script>
+let aiConversations = JSON.parse(localStorage.getItem('amanda_ai_conversas')||'[]');
+let aiCurrentId = null;
+
+function abrirMenuLateral(){
+  document.getElementById('aiSidebar').classList.add('open');
+  document.getElementById('aiOverlay').classList.add('show');
+  document.body.classList.add('ai-open');
+}
+function fecharMenuLateral(){
+  document.getElementById('aiSidebar').classList.remove('open');
+  document.getElementById('aiOverlay').classList.remove('show');
+  document.body.classList.remove('ai-open');
+}
+function renderHistorico(){
+  const box=document.getElementById('aiHistory');
+  if(!box)return;
+  box.innerHTML='';
+  if(!aiConversations.length){
+    box.innerHTML='<div style="padding:8px;color:#888;font-size:13px">Nenhuma conversa ainda.</div>';
+    return;
+  }
+  aiConversations.slice().reverse().forEach(c=>{
+    const b=document.createElement('button');
+    b.textContent='💬 '+(c.titulo||'Conversa');
+    b.onclick=()=>abrirConversa(c.id);
+    box.appendChild(b);
+  });
+}
+function salvarHistorico(){
+  localStorage.setItem('amanda_ai_conversas',JSON.stringify(aiConversations.slice(-30)));
+  renderHistorico();
+}
+function iniciarConversaSeNecessario(){
+  if(aiCurrentId)return;
+  const id=Date.now().toString();
+  aiCurrentId=id;
+  aiConversations.push({id,titulo:'Nova conversa',mensagens:[],criadaEm:new Date().toISOString()});
+  salvarHistorico();
+}
+function registrarMensagemHistorico(papel,texto){
+  iniciarConversaSeNecessario();
+  const c=aiConversations.find(x=>x.id===aiCurrentId);
+  if(!c)return;
+  c.mensagens.push({papel,texto});
+  if(papel==='user' && c.titulo==='Nova conversa'){
+    c.titulo=texto.slice(0,42)+(texto.length>42?'…':'');
+  }
+  salvarHistorico();
+}
+function abrirConversa(id){
+  const c=aiConversations.find(x=>x.id===id);
+  if(!c)return;
+  aiCurrentId=id;
+  const box=document.getElementById('aiMsgs');
+  if(box){
+    box.innerHTML='';
+    c.mensagens.forEach(m=>addAIMsg(m.papel==='user'?'user':'bot',m.texto,false));
+  }
+  abrirAssistente();
+  fecharMenuLateral();
+}
+function novaConversa(){
+  aiCurrentId=null;
+  const box=document.getElementById('aiMsgs');
+  if(box)box.innerHTML='';
+  abrirAssistente();
+  fecharMenuLateral();
+}
+function abrirAssistenteMenu(){
+  abrirAssistente();
+  fecharMenuLateral();
+}
+function abrirVisaoAmanda(){
+  fecharAssistente();
+  const v=document.getElementById('visaoAmanda');
+  if(v){
+    v.style.display='block';
+    atualizarVisaoAmanda();
+    v.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  fecharMenuLateral();
+}
+function dinheiroLocal(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+function atualizarVisaoAmanda(){
+  const fin=state.financeiro||[];
+  const hoje=new Date();
+  const ym=hoje.toISOString().slice(0,7);
+  const mes=fin.filter(x=>String(x.data||'').slice(0,7)===ym);
+  const ent=mes.filter(x=>['entrada','receita'].includes(String(x.tipo||'').toLowerCase())).reduce((a,x)=>a+Number(x.valor||0),0);
+  const sai=mes.filter(x=>['saida','saída','despesa'].includes(String(x.tipo||'').toLowerCase())).reduce((a,x)=>a+Number(x.valor||0),0);
+  document.getElementById('vData').textContent=hoje.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('vFat').textContent=dinheiroLocal(ent);
+  document.getElementById('vDesp').textContent=dinheiroLocal(sai);
+  const resultado=ent-sai;
+  document.getElementById('vRes').textContent=dinheiroLocal(resultado);
+  document.getElementById('vResCard').classList.toggle('negative',resultado<0);
+  const insight=resultado>=0
+    ? `Até agora, o mês registra ${dinheiroLocal(ent)} em faturamento e um resultado estimado de ${dinheiroLocal(resultado)}.`
+    : `O resultado está negativo em ${dinheiroLocal(Math.abs(resultado))}. Vale olhar as despesas e os próximos atendimentos.`;
+  document.getElementById('vInsight').textContent=insight;
+  document.getElementById('vCli').textContent=String((state.clients||[]).length);
+
+  const baixos=(state.produtos||[]).filter(x=>Number(x.quantidade||0)<=Number(x.estoque_minimo||0));
+  const at=baixoTexto=baixos.length?'<ul>'+baixos.slice(0,6).map(x=>`<li>${x.nome}: ${x.quantidade} ${x.unidade||'un'} (mín. ${x.estoque_minimo})</li>`).join('')+'</ul>':'<div class="ai-empty">Nenhum produto no mínimo.</div>';
+  document.getElementById('vAtencao').innerHTML=at;
+
+  const ag=(state.agenda||[]).filter(x=>x.data>=ym+'-01' && String(x.status||'').toLowerCase()!=='cancelado').slice(0,5);
+  document.getElementById('vAgenda').innerHTML=ag.length?'<ul>'+ag.map(x=>`<li>${x.data} às ${(x.horario||'').slice(0,5)} — ${x.status||'Agendado'}</li>`).join('')+'</ul>':'<div class="ai-empty">Nenhum próximo agendamento encontrado.</div>';
+
+  const cp=(state.contasPagar||[]).filter(x=>!x.pago).reduce((a,x)=>a+Number(x.valor||0),0);
+  const cr=(state.contasReceber||[]).filter(x=>!x.pago).reduce((a,x)=>a+Number(x.valor||0),0);
+  document.getElementById('vContas').innerHTML=`<ul><li>A pagar: <b>${dinheiroLocal(cp)}</b></li><li>A receber: <b>${dinheiroLocal(cr)}</b></li></ul>`;
+
+  const falta=Math.max(0,5000-ent);
+  document.getElementById('vMeta').innerHTML=`<div>Para alcançar uma referência de R$ 5.000 no mês, faltariam <b>${dinheiroLocal(falta)}</b>.</div><small>Essa referência é apenas um exemplo; depois podemos criar sua meta real no sistema.</small>`;
+}
+
+/* Intercepta mensagens para manter histórico local */
+const _addAIMsgOriginal=window.addAIMsg;
+window.addAIMsg=function(tipo,text,save=true){
+  const el=_addAIMsgOriginal(tipo,text);
+  if(save && (tipo==='user'||tipo==='bot')) registrarMensagemHistorico(tipo==='user'?'user':'assistant',text);
+  return el;
+};
+renderHistorico();
+</script>
+
+<script>
+function mostrarHistorico(){ abrirMenuLateral(); const b=document.querySelector('.ai-history'); if(b)b.scrollIntoView({behavior:'smooth'}); }
+function abrirAssistenteComTexto(t){ if(!t.trim())return; abrirAssistente(); setTimeout(()=>{const i=document.getElementById('aiInput'); if(i){i.value=t; enviarPerguntaIA();}},120); }
+function navegarSistema(nome){
+  fecharMenuLateral();
+  const map={agenda:'agenda',atendimentos:'atendimentos',clientes:'clientes',comissoes:'comissoes',despesas:'despesas',estoque:'estoque',financeiro:'financeiro',servicos:'servicos',contas:'contas_pagar',metas:'metas',profissionais:'profissionais',compras:'compras',relatorios:'relatorios'};
+  const id=map[nome];
+  if(id){
+    const el=document.querySelector(`[data-tab="${id}"], #tab-${id}, [onclick*="${id}"]`);
+    if(el){el.click();return;}
+  }
+  if(typeof mostrarTab==='function') try{mostrarTab(id||nome)}catch(e){}
+  else if(typeof showTab==='function') try{showTab(id||nome)}catch(e){}
+}
+function atualizarDashboardVisual(){
+  if(typeof atualizarVisaoAmanda==='function') atualizarVisaoAmanda();
+  const fin=state.financeiro||[];
+  const ym=new Date().toISOString().slice(0,7);
+  const mes=fin.filter(x=>String(x.data||'').slice(0,7)===ym);
+  const porServico={};
+  mes.forEach(x=>{
+    const d=String(x.descricao||'');
+    let nome='';
+    try{const j=JSON.parse(d);nome=j.servico||'';}catch{}
+    if(nome)porServico[nome]=(porServico[nome]||0)+1;
+  });
+  const sv=Object.entries(porServico).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const box=document.getElementById('vServicos');
+  if(box)box.innerHTML=sv.length?'<ul>'+sv.map(x=>`<li>${x[0]} <b style="float:right;color:#8b6b55">${x[1]}</b></li>`).join('')+'</ul>':'<div class="ai-empty">Ainda não há serviços suficientes para mostrar.</div>';
+
+  const g=document.getElementById('vGrafico');
+  if(g){
+    const vals=[];
+    for(let i=5;i>=0;i--){
+      const d=new Date();d.setMonth(d.getMonth()-i);
+      const k=d.toISOString().slice(0,7);
+      const v=fin.filter(x=>String(x.data||'').slice(0,7)===k && ['entrada','receita'].includes(String(x.tipo||'').toLowerCase())).reduce((a,x)=>a+Number(x.valor||0),0);
+      vals.push({v,label:d.toLocaleDateString('pt-BR',{month:'short'}).replace('.','')});
+    }
+    const max=Math.max(1,...vals.map(x=>x.v));
+    g.innerHTML=vals.map(x=>`<div title="${dinheiroLocal(x.v)}" style="flex:1;min-width:18px;height:${Math.max(8,x.v/max*150)}px;background:linear-gradient(180deg,#b5967f,#8b6b55);border-radius:7px 7px 2px 2px;position:relative"><small style="position:absolute;top:calc(100% + 5px);left:50%;transform:translateX(-50%);color:#999;font-size:10px">${x.label}</small></div>`).join('');
+  }
+}
+const _oldAtualizarVisaoAmanda=window.atualizarVisaoAmanda;
+window.atualizarVisaoAmanda=function(){ if(_oldAtualizarVisaoAmanda)_oldAtualizarVisaoAmanda(); atualizarDashboardVisual(); };
+</script>
+
+<script id="final-ui-controller">
+(function(){
+  function showDashboard(){
+    const d=document.getElementById('visaoAmanda');
+    const a=document.getElementById('app');
+    if(d)d.style.display='block';
+    if(a)a.classList.remove('hidden');
+    const tabs=document.querySelectorAll('#app .tab');
+    tabs.forEach(t=>t.classList.remove('active'));
+    fecharMenuLateral();
+    if(typeof atualizarVisaoAmanda==='function') atualizarVisaoAmanda();
+    if(typeof atualizarDashboardVisual==='function') atualizarDashboardVisual();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  window.abrirVisaoAmanda=showDashboard;
+
+  const originalTab=window.tab;
+  window.tab=function(id,btn){
+    const d=document.getElementById('visaoAmanda');
+    if(d)d.style.display='none';
+    if(typeof originalTab==='function') originalTab(id,btn);
+    fecharMenuLateral();
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+
+  window.navegarSistema=function(nome){
+    const map={agenda:'agenda',atendimentos:'atend',clientes:null,comissoes:'com',despesas:'desp',estoque:'estoque',financeiro:'inicio',servicos:null,contas:null,metas:null,profissionais:null,compras:null,relatorios:null};
+    if(nome==='dashboard'){showDashboard();return;}
+    if(map[nome]){
+      const btn=[...document.querySelectorAll('#nav button')].find(b=>b.getAttribute('onclick')?.includes("'"+map[nome]+"'"));
+      window.tab(map[nome],btn);
+      return;
+    }
+    // For sections not yet represented as tabs, open the closest relevant screen
+    // instead of showing an empty page.
+    if(['clientes','profissionais','servicos','compras','contas','metas','relatorios'].includes(nome)){
+      const d=document.getElementById('visaoAmanda'); if(d)d.style.display='none';
+      const msgBox=document.getElementById('sync');
+      if(msgBox){msgBox.textContent='ℹ️ Esta área será adicionada ao menu em breve.';msgBox.classList.remove('hidden');setTimeout(()=>msgBox.classList.add('hidden'),2500);}
+      fecharMenuLateral();
+    }
+  };
+
+  // When logged in, show the professional dashboard instead of the old brown panel.
+  const oldHandler=client.auth.onAuthStateChange;
+})();
+</script>
+
+<script id="ac-dashboard-renderer">
+function acMoney(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+function atualizarDashboardAC(){
+  const atend=state.atend||[], desp=state.desp||[], com=state.com||[], est=state.est||[], ag=state.agenda||[];
+  const fat=atend.reduce((s,x)=>s+Number(x.valor||0),0);
+  const comV=com.reduce((s,x)=>s+Number(x.valor_comissao||0),0);
+  const despV=desp.reduce((s,x)=>s+Number(x.valor||0),0);
+  const cust=atend.reduce((s,x)=>s+Number(x.custo||0),0);
+  const lucro=fat-comV-cust-despV;
+  document.getElementById('fat').textContent=acMoney(fat);
+  document.getElementById('comv').textContent=acMoney(comV);
+  document.getElementById('despv').textContent=acMoney(despV);
+  document.getElementById('cust').textContent=acMoney(cust);
+  const le=document.getElementById('lucro'); le.textContent=acMoney(lucro); le.style.color=lucro<0?'#9a7b66':'#15171a';
+
+  const months=[];
+  const now=new Date();
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key=d.toISOString().slice(0,7);
+    const v=atend.filter(x=>String(x.data||'').slice(0,7)===key).reduce((s,x)=>s+Number(x.valor||0),0);
+    months.push({label:d.toLocaleDateString('pt-BR',{month:'short'}).replace('.',''),v});
+  }
+  const max=Math.max(1,...months.map(x=>x.v));
+  document.getElementById('acChart').innerHTML=months.map(x=>`<div class="bar" style="height:${Math.max(10,(x.v/max)*175)}px"><em>${acMoney(x.v)}</em><small>${x.label}</small></div>`).join('');
+
+  const sv={};
+  atend.forEach(x=>{const n=x.serv||x.servico||'Serviço';sv[n]=(sv[n]||0)+1;});
+  const arr=Object.entries(sv).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  document.getElementById('acServices').innerHTML=arr.length?'<ul class="dash-list">'+arr.map(x=>`<li><span class="dot"></span>${x[0]}<span class="pill">${x[1]} atend.</span></li>`).join('')+'</ul>':'<div class="muted">Cadastre atendimentos para visualizar.</div>';
+
+  const future=ag.filter(x=>String(x.data||'')>=new Date().toISOString().slice(0,10)).slice(0,5);
+  document.getElementById('acAgenda').innerHTML=future.length?future.map(x=>`<li><span class="dot"></span><b>${String(x.horario||'').slice(0,5)}</b><span>${x.status||'Agendado'}</span></li>`).join(''):'<li class="muted">Nenhum próximo agendamento.</li>';
+
+  const low=est.filter(x=>Number(x.quantidade||0)<=Number(x.estoque_minimo||0)).slice(0,5);
+  document.getElementById('acStock').innerHTML=low.length?low.map(x=>`<li><span class="dot"></span>${x.nome}<span class="pill">${x.quantidade} ${x.unidade||'un'}</span></li>`).join(''):'<li class="muted">Nenhum produto no mínimo.</li>';
+
+  const pendP=(state.desp||[]).filter(x=>x.status==='Pendente').reduce((s,x)=>s+Number(x.valor||0),0);
+  document.getElementById('acAccounts').innerHTML=`<div class="account"><div class="circle">↑</div><div><span class="muted">Despesas pendentes</span><b>${acMoney(pendP)}</b></div></div><div class="account"><div class="circle">✓</div><div><span class="muted">Clientes cadastrados</span><b>${state.clients?.length||0}</b></div></div>`;
+
+  document.getElementById('resumo').innerHTML=`Faturamento bruto: <b>${acMoney(fat)}</b><br>− Comissões: <b>${acMoney(comV)}</b><br>− Custos: <b>${acMoney(cust)}</b><br>− Despesas: <b>${acMoney(despV)}</b>`;
+}
+function abrirDashboardAC(){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('inicio').classList.add('active');
+  document.querySelectorAll('#aiSidebar button').forEach(x=>x.classList.remove('active'));
+  const b=[...document.querySelectorAll('#aiSidebar button')].find(x=>x.textContent.includes('Dashboard')); if(b)b.classList.add('active');
+  atualizarDashboardAC(); fecharMenuLateral(); window.scrollTo(0,0);
+}
+function abrirTabAC(id,btn){
+  document.getElementById('visaoAmanda')?.style?.setProperty('display','none');
+  if(typeof tab==='function') tab(id,btn);
+  document.querySelectorAll('#aiSidebar button').forEach(x=>x.classList.remove('active')); btn.classList.add('active');
+  fecharMenuLateral();
+}
+function abrirHistoricoAC(){
+  abrirAssistente();
+  setTimeout(()=>{document.getElementById('aiHistory')?.scrollIntoView({behavior:'smooth'});},150);
+  fecharMenuLateral();
+}
+function acAfterRender(){try{atualizarDashboardAC()}catch(e){console.error(e)}}
+const _acRenderOriginal=window.render;
+if(typeof _acRenderOriginal==='function'){
+  window.render=function(){_acRenderOriginal();acAfterRender();}
+}
+</script>
+
+<script id="ac-new-features-js">
+/* ===== NOVOS RECURSOS AMANDA CASTRO ===== */
+state.comandas=state.comandas||[];
+state.comandaItens=state.comandaItens||[];
+state.lembretes=state.lembretes||[];
+state.procedimentos=state.servicos||[];
+let comandaAtual=[];
+
+function abrirAbaNova(id,btn){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById(id); if(el)el.classList.add('active');
+  document.querySelectorAll('#aiSidebar button').forEach(x=>x.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  fecharMenuLateral(); window.scrollTo(0,0);
+  if(id==='procedimentos')renderProcedimentos();
+  if(id==='comandas')renderComandas();
+  if(id==='lembretes')renderLembretes();
+}
+const _abrirTabACOriginal=window.abrirTabAC;
+window.abrirTabAC=function(id,btn){
+  if(['comandas','procedimentos','lembretes'].includes(id)){abrirAbaNova(id,btn);return;}
+  if(typeof _abrirTabACOriginal==='function')_abrirTabACOriginal(id,btn);
+};
+
+async function carregarNovosDados(){
+  try{
+    const uid=(await client.auth.getUser()).data.user.id;
+    const q1=await client.from('comandas').select('*').eq('user_id',uid).order('created_at',{ascending:false});
+    const q2=await client.from('comanda_itens').select('*').eq('user_id',uid).order('created_at');
+    const q3=await client.from('lembretes').select('*').eq('user_id',uid).order('data_hora');
+    if(!q1.error)state.comandas=q1.data||[];
+    if(!q2.error)state.comandaItens=q2.data||[];
+    if(!q3.error)state.lembretes=q3.data||[];
+  }catch(e){console.warn('Novos recursos ainda não configurados:',e.message)}
+}
+
+function renderProcedimentos(){
+  const box=document.getElementById('listaProcedimentos'); if(!box)return;
+  const arr=(state.servicos||[]).slice().sort((a,b)=>String(a.nome).localeCompare(String(b.nome)));
+  box.innerHTML=arr.length?`<table><tr><th>Nome</th><th>Valor</th><th>Comissão</th><th>Duração</th><th>Ações</th></tr>${arr.map(x=>`<tr><td>${x.nome}</td><td>${money(x.preco)}</td><td>${Number(x.percentual_comissao||0)}%</td><td>${x.duracao_minutos||60} min</td><td><button class="secondary" onclick="editarProcedimento(${x.id})">Editar</button> <button class="del" onclick="excluirProcedimento(${x.id})">Excluir</button></td></tr>`).join('')}</table>`:`<div class="empty">Nenhum procedimento cadastrado.</div>`;
+  preencherSelectProcedimentos();
+}
+function preencherSelectProcedimentos(){
+  const sels=['gServico','coServico'];
+  sels.forEach(id=>{
+    const s=document.getElementById(id);if(!s)return;
+    const atual=s.value;
+    s.innerHTML='<option value="">Selecione um procedimento</option>'+(state.servicos||[]).slice().sort((a,b)=>String(a.nome).localeCompare(String(b.nome))).map(x=>`<option value="${x.id}">${x.nome} — ${money(x.preco)} • ${Number(x.percentual_comissao||0)}%</option>`).join('');
+    if(atual)s.value=atual;
+  });
+  ['listaClientesAgenda','listaClientesComanda'].forEach(id=>{
+    const d=document.getElementById(id);if(d)d.innerHTML=(state.clients||[]).map(x=>`<option value="${x.nome}">`).join('');
+  });
+  ['listaProfAgenda','listaProfComanda'].forEach(id=>{
+    const d=document.getElementById(id);if(d)d.innerHTML=(state.prof||[]).map(x=>`<option value="${x.nome}">`).join('');
+  });
+}
+function preencherProcedimentoAgenda(){
+  const id=Number(document.getElementById('gServico')?.value);
+  const s=(state.servicos||[]).find(x=>x.id===id);
+  if(!s)return;
+  document.getElementById('gValor').value=Number(s.preco||0).toFixed(2);
+  document.getElementById('gPct').value=Number(s.percentual_comissao||0);
+}
+async function salvarProcedimento(){
+  const nome=document.getElementById('prNome').value.trim();
+  if(!nome)return alert('Informe o nome do procedimento.');
+  const uid=(await client.auth.getUser()).data.user.id;
+  const payload={user_id:uid,nome,categoria:document.getElementById('prCat').value.trim(),preco:Number(document.getElementById('prValor').value||0),custo:Number(document.getElementById('prCusto').value||0),duracao_minutos:Number(document.getElementById('prDur').value||60),percentual_comissao:Number(document.getElementById('prPct').value||0),ativo:true};
+  const r=await client.from('servicos').insert(payload);
+  if(r.error)return alert('Não foi possível salvar: '+r.error.message);
+  ['prNome','prCat','prValor','prCusto','prDur'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('prPct').value='0';
+  await carregar();renderProcedimentos();
+}
+async function editarProcedimento(id){
+  const x=state.servicos.find(y=>y.id===id);if(!x)return;
+  const nome=prompt('Nome do procedimento:',x.nome);if(nome===null)return;
+  const preco=prompt('Valor:',x.preco);if(preco===null)return;
+  const pct=prompt('Comissão %:',x.percentual_comissao||0);if(pct===null)return;
+  const r=await client.from('servicos').update({nome:nome.trim(),preco:Number(preco),percentual_comissao:Number(pct)}).eq('id',id).eq('user_id',(await client.auth.getUser()).data.user.id);
+  if(r.error)return alert(r.error.message); await carregar();renderProcedimentos();
+}
+async function excluirProcedimento(id){
+  if(!confirm('Excluir este procedimento?'))return;
+  const r=await client.from('servicos').delete().eq('id',id).eq('user_id',(await client.auth.getUser()).data.user.id);
+  if(r.error)return alert(r.error.message);await carregar();renderProcedimentos();
+}
+
+/* Comandas */
+document.addEventListener('change',e=>{
+  if(e.target?.id==='coServico'){
+    const s=state.servicos.find(x=>x.id===Number(e.target.value));
+    if(s)document.getElementById('coValor').value=Number(s.preco||0).toFixed(2);
+  }
+  if(['pCusto','pQtd','pEmbQtd','pEmbUn'].includes(e.target?.id))atualizarCustoFracionado();
+});
+document.addEventListener('input',e=>{if(['pCusto','pQtd','pEmbQtd','pEmbUn'].includes(e.target?.id))atualizarCustoFracionado()});
+
+function adicionarItemComanda(){
+  const sid=Number(document.getElementById('coServico').value);
+  const s=state.servicos.find(x=>x.id===sid);
+  if(!s)return alert('Selecione um procedimento.');
+  const qtd=Number(document.getElementById('coQtd').value||1);
+  const valor=Number(document.getElementById('coValor').value||s.preco||0);
+  comandaAtual.push({tipo:'servico',item_id:s.id,nome:s.nome,quantidade:qtd,valor_unitario:valor,percentual_comissao:Number(s.percentual_comissao||0),valor_comissao:qtd*valor*Number(s.percentual_comissao||0)/100});
+  document.getElementById('coQtd').value=1;renderComandaAtual();
+}
+function editarValorItemComanda(i){
+  const x=comandaAtual[i];if(!x)return;
+  const atual=Number(x.valor_unitario||0);
+  const entrada=prompt(`Novo valor de ${x.nome}:`, atual.toFixed(2));
+  if(entrada===null)return;
+  const valor=Number(String(entrada).replace(/\s/g,'').replace(',','.'));
+  if(!Number.isFinite(valor)||valor<0)return alert('Informe um valor válido.');
+  x.valor_unitario=valor;
+  x.valor_comissao=Number(x.quantidade||1)*valor*Number(x.percentual_comissao||0)/100;
+  renderComandaAtual();
+}
+function editarComissaoItemComanda(i){
+  const x=comandaAtual[i];if(!x)return;
+  const entrada=prompt(`Percentual de comissão para ${x.nome}:`, Number(x.percentual_comissao||0).toFixed(2));
+  if(entrada===null)return;
+  const pct=Number(String(entrada).replace(',','.'));
+  if(!Number.isFinite(pct)||pct<0)return alert('Informe uma porcentagem válida.');
+  x.percentual_comissao=pct;
+  x.valor_comissao=Number(x.quantidade||1)*Number(x.valor_unitario||0)*pct/100;
+  renderComandaAtual();
+}
+function renderComandaAtual(){
+  const box=document.getElementById('itensComanda');if(!box)return;
+  const sub=comandaAtual.reduce((s,x)=>s+x.quantidade*x.valor_unitario,0);
+  const desc=Number(document.getElementById('coDesconto').value||0);
+  const total=Math.max(0,sub-desc);
+  document.getElementById('totalComanda').textContent=money(total);
+  box.innerHTML=comandaAtual.length?comandaAtual.map((x,i)=>`<div class="comanda-item"><span><b>${x.nome}</b><br><small>${x.quantidade} × ${money(x.valor_unitario)} • comissão ${Number(x.percentual_comissao||0).toFixed(2)}% = ${money(x.valor_comissao||0)}</small></span><span><b>${money(x.quantidade*x.valor_unitario)}</b> <button class="secondary" onclick="editarValorItemComanda(${i})">Editar valor</button> <button class="secondary" onclick="editarComissaoItemComanda(${i})">Comissão</button> <button class="del" onclick="removerItemComanda(${i})">×</button></span></div>`).join(''):'<div class="empty">Nenhum item adicionado.</div>';
+}
+function removerItemComanda(i){comandaAtual.splice(i,1);renderComandaAtual();}
+async function finalizarComanda(){
+  if(!comandaAtual.length)return alert('Adicione pelo menos um procedimento.');
+  const uid=(await client.auth.getUser()).data.user.id;
+  const nomeCliente=document.getElementById('coCliente').value.trim();
+  const nomeProf=document.getElementById('coProf').value.trim();
+  const cliente_id=nomeCliente?await ensureByName('clientes',nomeCliente):null;
+  const profissional_id=nomeProf?await ensureByName('profissionais',nomeProf):null;
+  const subtotal=comandaAtual.reduce((s,x)=>s+x.quantidade*x.valor_unitario,0);
+  const desconto=Number(document.getElementById('coDesconto').value||0);
+  const total=Math.max(0,subtotal-desconto);
+  const numero=(state.comandas.reduce((m,x)=>Math.max(m,Number(x.numero||0)),0)||0)+1;
+  const c=await client.from('comandas').insert({user_id:uid,numero,cliente_id,profissional_id,data:new Date().toISOString().slice(0,10),status:'Finalizada',subtotal,desconto,total,forma_pagamento:document.getElementById('coPag').value}).select().single();
+  if(c.error)return alert('A tabela de comandas ainda não está disponível. Execute o arquivo SQL de migração no Supabase.');
+  const itens=comandaAtual.map(x=>({...x,user_id:uid,comanda_id:c.data.id}));
+  const ir=await client.from('comanda_itens').insert(itens);
+  if(ir.error)return alert(ir.error.message);
+  const data=new Date().toISOString().slice(0,10);
+  const descricao=JSON.stringify({cliente:nomeCliente,servico:comandaAtual.map(x=>x.nome).join(', '),prof:nomeProf,comanda:numero});
+  await client.from('financeiro').insert({user_id:uid,tipo:'Entrada',categoria:'Atendimento',descricao,valor:total,data,forma_pagamento:document.getElementById('coPag').value,cliente_id});
+  for(const x of comandaAtual){
+    if(profissional_id && x.valor_comissao>0) await client.from('comissoes').insert({user_id:uid,profissional_id,servico_id:x.item_id,data,valor_servico:x.quantidade*x.valor_unitario,percentual:x.percentual_comissao,valor_comissao:x.valor_comissao,pago:false,observacoes:'Comanda #'+numero});
+  }
+  const rec={...c.data,itens:comandaAtual,cliente:nomeCliente,prof:nomeProf};
+  comandaAtual=[];document.getElementById('coCliente').value='';document.getElementById('coProf').value='';document.getElementById('coDesconto').value='0';renderComandaAtual();
+  await carregar();await carregarNovosDados();renderComandas();
+  gerarComprovante(rec);
+}
+function renderComandas(){
+  const box=document.getElementById('listaComandas');if(!box)return;
+  const arr=state.comandas||[];
+  box.innerHTML=arr.length?`<table><tr><th>#</th><th>Data</th><th>Cliente</th><th>Total</th><th>Status</th><th></th></tr>${arr.map(x=>`<tr><td>${x.numero}</td><td>${x.data}</td><td>${(state.clients.find(c=>c.id===x.cliente_id)||{}).nome||'—'}</td><td>${money(x.total)}</td><td>${x.status}</td><td><button class="secondary" onclick="editarValoresComanda(${x.id})">Editar valores</button> <button class="secondary" onclick="gerarComprovantePorId(${x.id})">Comprovante</button></td></tr>`).join('')}</table>`:'<div class="empty">Nenhuma comanda registrada.</div>';
+}
+async function editarValoresComanda(id){
+  const c=(state.comandas||[]).find(x=>x.id===id);if(!c)return;
+  const itens=(state.comandaItens||[]).filter(x=>x.comanda_id===id);
+  if(!itens.length)return alert('Esta comanda não possui itens.');
+  const novos=[];
+  for(const item of itens){
+    const entrada=prompt(`Novo valor unitário de ${item.nome}:`,Number(item.valor_unitario||0).toFixed(2));
+    if(entrada===null)return;
+    const valor=Number(String(entrada).replace(/\s/g,'').replace(',','.'));
+    if(!Number.isFinite(valor)||valor<0)return alert('Valor inválido. A comanda não foi alterada.');
+    novos.push({item,valor});
+  }
+  const desconto=Number(c.desconto||0);
+  const subtotal=novos.reduce((s,z)=>s+Number(z.item.quantidade||1)*z.valor,0);
+  const total=Math.max(0,subtotal-desconto);
+  const uid=(await client.auth.getUser()).data.user.id;
+  for(const z of novos){
+    const valorComissao=Number(z.item.quantidade||1)*z.valor*Number(z.item.percentual_comissao||0)/100;
+    const r=await client.from('comanda_itens').update({valor_unitario:z.valor,valor_comissao:valorComissao}).eq('id',z.item.id).eq('user_id',uid);
+    if(r.error)return alert('Não foi possível atualizar os itens: '+r.error.message);
+  }
+  const rc=await client.from('comandas').update({subtotal,total}).eq('id',id).eq('user_id',uid);
+  if(rc.error)return alert('Não foi possível atualizar o total: '+rc.error.message);
+  await carregarNovosDados();
+  renderComandas();
+  alert(`Comanda #${c.numero} atualizada.\nNovo total: ${money(total)}`);
+}
+async function gerarComprovantePorId(id){
+  const c=state.comandas.find(x=>x.id===id);if(!c)return;
+  const itens=(state.comandaItens||[]).filter(x=>x.comanda_id===id);
+  gerarComprovante({...c,itens,cliente:(state.clients.find(y=>y.id===c.cliente_id)||{}).nome||'Cliente',prof:(state.prof.find(y=>y.id===c.profissional_id)||{}).nome||''});
+}
+function gerarComprovante(c){
+  let old=document.querySelector('.receipt-print');if(old)old.remove();
+  const el=document.createElement('div');el.className='receipt-print';
+  el.innerHTML=`<h1>AMANDA CASTRO</h1><p>Comprovante de serviços realizados</p><hr><p><b>Comanda:</b> #${c.numero}<br><b>Data:</b> ${c.data}<br><b>Cliente:</b> ${c.cliente||'—'}<br><b>Profissional:</b> ${c.prof||'—'}</p><hr>${(c.itens||[]).map(x=>`<p>${x.quantidade} × ${x.nome} — <b>${money(x.quantidade*x.valor_unitario)}</b></p>`).join('')}<hr><h2>Total: ${money(c.total)}</h2><p>Pagamento: ${c.forma_pagamento||'—'}</p><p>Obrigada pela preferência! ❤️</p>`;
+  document.body.appendChild(el);window.print();setTimeout(()=>el.remove(),1000);
+}
+
+/* Estoque fracionado: converte todas as unidades de massa e volume para uma unidade-base. */
+function unidadeBaseEstoque(un){
+  const u=String(un||'un').toLowerCase();
+  const massa={mcg:{base:'mcg',fator:1},mg:{base:'mg',fator:1},g:{base:'g',fator:1},kg:{base:'g',fator:1000}};
+  const volume={ml:{base:'ml',fator:1},cl:{base:'ml',fator:10},dl:{base:'ml',fator:100},l:{base:'ml',fator:1000}};
+  if(massa[u])return massa[u];
+  if(volume[u])return volume[u];
+  return {base:'un',fator:1};
+}
+function formatarUnidadeBase(base){return base==='un'?'un':base;}
+function atualizarCustoFracionado(){
+  const custo=Number(document.getElementById('pCusto')?.value||0);
+  const qEmb=Number(document.getElementById('pQtd')?.value||0);
+  const qConteudo=Number(document.getElementById('pEmbQtd')?.value||0);
+  const un=document.getElementById('pEmbUn')?.value||'un';
+  const el=document.getElementById('custoFracionadoPreview');
+  const totalEl=document.getElementById('pTotalEstoque');
+  if(!el)return;
+  const totalEstoque=qEmb*custo;
+  if(totalEl)totalEl.value=totalEstoque>0?totalEstoque.toFixed(2):'';
+  if(!(custo>0&&qConteudo>0)){
+    el.textContent='';
+    return;
+  }
+  const conv=unidadeBaseEstoque(un);
+  const totalBase=qConteudo*conv.fator;
+  const custoBase=custo/totalBase;
+  let exemploQtd=10;
+  let exemploUn=conv.base;
+  if(conv.base==='un') exemploQtd=1;
+  const exemplo=custoBase*exemploQtd;
+  el.innerHTML=
+    `<b>Resumo:</b> ${qEmb||0} embalagem(ns) × ${money(custo)} = <b>${money(totalEstoque)}</b> em estoque.<br>`+
+    `Custo fracionado: <span class="frac">${money(custoBase)} por ${formatarUnidadeBase(conv.base)}</span> `+
+    `(${qConteudo} ${un} por embalagem). `+
+    `Ex.: ${exemploQtd} ${exemploUn} = <b>${money(exemplo)}</b>.`;
+}
+
+/* Lembretes */
+function renderLembretes(){
+  const box=document.getElementById('listaLembretes');if(!box)return;
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const ag=state.agenda.slice().filter(x=>String(x.data)>=new Date().toISOString().slice(0,10)).sort((a,b)=>String(a.data+a.horario).localeCompare(String(b.data+b.horario)));
+  box.innerHTML=ag.length?ag.map(x=>{
+    const c=state.clients.find(y=>y.id===x.cliente_id);const nome=c?.nome||'Cliente';
+    const telefone=c?.telefone||'';const texto=encodeURIComponent(`Olá, ${nome}! ❤️ Passando para confirmar seu horário no Amanda Castro no dia ${x.data.split('-').reverse().join('/')} às ${(x.horario||'').slice(0,5)}. Podemos contar com você?`);
+    return `<div class="comanda-item"><span><b>${nome}</b><br><small>${x.data.split('-').reverse().join('/')} às ${(x.horario||'').slice(0,5)}</small></span><span><button class="secondary" onclick="window.open('https://wa.me/${String(telefone).replace(/\D/g,'')}?text=${texto}','_blank')">WhatsApp</button></span></div>`;
+  }).join(''):'<div class="empty">Nenhum agendamento futuro.</div>';
+}
+async function pedirPermissaoLembretes(){
+  if(!('Notification' in window))return alert('Este navegador não oferece notificações.');
+  const p=await Notification.requestPermission();
+  if(p==='granted'){new Notification('Amanda Castro',{body:'Lembretes de agenda ativados neste aparelho. ❤️'});renderLembretes();}
+  else alert('A permissão de notificações não foi concedida.');
+}
+
+/* OAuth */
+async function entrarOAuth(provider){
+  const redirectTo=window.location.origin+window.location.pathname;
+  const {error}=await client.auth.signInWithOAuth({provider,options:{redirectTo}});
+  if(error)msg('Não foi possível iniciar o login: '+error.message);
+}
+function entrarInstagram(){
+  alert('O Instagram precisa ser configurado pela Meta antes de funcionar. O botão já está preparado para a integração OAuth.');
+}
+
+/* Comissões editáveis */
+async function editarComissao(id){
+  const x=state.com.find(y=>y.id===id);
+  if(!x)return;
+
+  const valorServicoAtual=Number(x.valor_servico||0);
+  const valorServicoInput=prompt(
+    'Valor do serviço/atendimento:',
+    valorServicoAtual.toFixed(2).replace('.',',')
+  );
+  if(valorServicoInput===null)return;
+
+  const valorServico=Number(String(valorServicoInput).replace(/\\./g,'').replace(',','.'))||0;
+  if(valorServico<0){
+    alert('O valor do serviço não pode ser negativo.');
+    return;
+  }
+
+  const modo=prompt(
+    'Como você quer editar a comissão?\\n\\n1 = Percentual (%)\\n2 = Valor (R$)\\n\\nDigite 1 ou 2:',
+    '1'
+  );
+  if(modo===null)return;
+
+  let percentual=Number(x.percentual||0);
+  let valorComissao=Number(x.valor_comissao||0);
+
+  if(String(modo).trim()==='1'){
+    const pctInput=prompt(
+      'Percentual de comissão (%):',
+      percentual.toFixed(2).replace('.',',')
+    );
+    if(pctInput===null)return;
+    percentual=Number(String(pctInput).replace(/\\./g,'').replace(',','.'))||0;
+    if(percentual<0){
+      alert('O percentual não pode ser negativo.');
+      return;
+    }
+    valorComissao=valorServico*percentual/100;
+  }else if(String(modo).trim()==='2'){
+    const valorInput=prompt(
+      'Valor da comissão (R$):',
+      valorComissao.toFixed(2).replace('.',',')
+    );
+    if(valorInput===null)return;
+    valorComissao=Number(String(valorInput).replace(/\\./g,'').replace(',','.'))||0;
+    if(valorComissao<0){
+      alert('O valor da comissão não pode ser negativo.');
+      return;
+    }
+    percentual=valorServico>0 ? (valorComissao/valorServico)*100 : 0;
+  }else{
+    alert('Escolha 1 para percentual ou 2 para valor.');
+    return;
+  }
+
+  // Arredondamento monetário e percentual, mantendo os dois campos sincronizados.
+  valorComissao=Math.round(valorComissao*100)/100;
+  percentual=Math.round(percentual*10000)/10000;
+
+  const uid=(await client.auth.getUser()).data.user?.id;
+  if(!uid)return alert('Sua sessão expirou. Entre novamente no sistema.');
+
+  const r=await client.from('comissoes').update({
+    valor_servico:valorServico,
+    percentual:percentual,
+    valor_comissao:valorComissao
+  }).eq('id',id).eq('user_id',uid);
+
+  if(r.error){
+    alert(r.error.message);
+  }else{
+    await carregar();
+    render();
+    alert(
+      'Comissão atualizada com sucesso!\\n\\n' +
+      'Valor do serviço: '+money(valorServico)+'\\n' +
+      'Comissão: '+percentual.toFixed(2)+'%\\n' +
+      'Valor da comissão: '+money(valorComissao)
+    );
+  }
+}
+</script>
+
+<script>
+async function verificarLembretesAutomaticos(){
+  try{
+    const agora=Date.now(), limite=agora+24*60*60*1000;
+    const proximos=(state.agenda||[]).filter(x=>{
+      const t=new Date(`${x.data}T${x.horario||'00:00'}`).getTime();
+      return t>=agora && t<=limite && x.status!=='Cancelado';
+    });
+    if(!proximos.length)return;
+    const c=state.clients||[];
+    const aviso=proximos.slice(0,3).map(x=>{
+      const nome=c.find(y=>y.id===x.cliente_id)?.nome||'Cliente';
+      return `${nome} às ${(x.horario||'').slice(0,5)}`;
+    }).join(' • ');
+    const el=document.getElementById('sync');
+    if(el){el.classList.remove('hidden');el.textContent='🔔 Próximos horários: '+aviso;setTimeout(()=>el.classList.add('hidden'),7000);}
+    if('Notification' in window && Notification.permission==='granted'){
+      new Notification('Amanda Castro — próximos horários',{body:aviso});
+    }
+  }catch(e){console.warn(e)}
+}
+</script>
+</body></html>
